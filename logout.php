@@ -7,6 +7,6 @@ session_regenerate_id();
 
 
 #redirect login page 
-header('Location:login.html');
+header('Location:login.php');
 
 ?>
