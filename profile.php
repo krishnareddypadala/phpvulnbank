@@ -27,7 +27,7 @@ echo "<br><br>Your phone number: $row[5]";
 echo "<br><br>Your balance: $row[3]";
 echo "<!-- <br><br>Your feedback:$row[6] -->";
 
-#logout page
+//#logout page
 
 
 }
