@@ -35,7 +35,7 @@ echo "<!-- <br><br>Your feedback:$row[6] -->";
 else
 	
 {
-header('Location:login.html');
+header('Location:login.php');
 }
 
 ?>
