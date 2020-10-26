@@ -19,7 +19,7 @@ $con=mysqli_connect("localhost","root","bose123$","bankdb");
  
  $row[0]=htmlspecialchars($row[0]);
 
-#extract blance from data and display
+//#extract blance from data and display
 
 echo "<br><br>Your account number $row[0]";
 echo "<br><br>Your emilid : $row[4]";
