@@ -3,7 +3,7 @@
 <form name="id" method="GET" action="displaydata.php">
 
 Account: <input type="text" name="aid"> <br><br>
-<input type="submit" value="get Account">
+<input type="submit" value="getAccount">
 </form>
 
  <a href='profile.php'>profile</a>
