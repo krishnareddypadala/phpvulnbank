@@ -17,6 +17,7 @@ if(isset($_GET['aid']) )
 
  $con = mysqli_connect("localhost","root","bose123$","bankdb");
 
+ 
  //$aid= mysqli_real_escape_string($con,$aid);	
 
  $result=mysqli_query($con,"select * from banktable where acno=$aid");
