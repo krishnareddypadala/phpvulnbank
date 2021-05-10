@@ -12,7 +12,6 @@ COPY /dock/ /usr/sbin/
 COPY /dbscript/ /usr/sbin/
 
 RUN chmod +x /usr/sbin/dock.sh
-RUN chmod +x /usr/sbin/db.php
 RUN chown -R www-data:www-data /var/www/html
 
 VOLUME /var/www/html

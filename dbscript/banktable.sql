@@ -1,5 +1,11 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
+
+\! echo " * Initializing..... Database..!!";
+CREATE USER 'groot'@'%' IDENTIFIED BY 'bose123$';
+GRANT ALL PRIVILEGES ON *.* TO 'groot'@'%' WITH GRANT OPTION;
+
+CREATE DATABASE bankdb;
 USE bankdb;
 CREATE TABLE `banktable` (
   `acno` int(11) NOT NULL,
