@@ -42,7 +42,7 @@ if(isset($_SESSION['uname']))
 	#echo $tacno;
 	#echo $tamount;
 
-	$con = mysqli_connect("localhost","root","bose123$","bankdb");
+	$con = mysqli_connect("localhost","groot","bose123$","bankdb");
 #---------------------------------------------------------------------------------------#	 
 	$fresult = mysqli_query($con,"select * from banktable where username='$fuser'");
                                   

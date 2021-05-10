@@ -17,7 +17,7 @@ session_start();
 
 	if($user=="admin")
 		{
-		$con = mysqli_connect("localhost","root","bose123$","bankdb");
+		$con = mysqli_connect("localhost","groot","bose123$","bankdb");
 	 
 		$result=mysqli_query($con,"select * from banktable");
 		for($i=1;$i<6;$i++)

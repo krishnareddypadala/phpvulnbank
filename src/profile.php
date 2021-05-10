@@ -6,7 +6,7 @@ $user=$_SESSION['uname'];
 
 echo "Hello $user";
 #connect database
-$con=mysqli_connect("localhost","root","bose123$","bankdb");
+$con=mysqli_connect("localhost","groot","bose123$","bankdb");
 #select * from banktable where username='$user'
 
  $result=mysqli_query($con,"select * from banktable where username='$user'");

@@ -29,7 +29,7 @@ $password=$_POST["pwd"];
 session_start();
 //$_SESSION["uname"]=$username;
 
-$con=mysqli_connect("localhost","root","bose123$","bankdb");
+$con=mysqli_connect("localhost","groot","bose123$","bankdb");
 
 //$username=mysqli_real_escape_string ($con,$username);
 //$password=mysqli_real_escape_string ($con,$password);

@@ -15,8 +15,13 @@ if(isset($_GET['aid']) )
 {
   	$aid = $_GET['aid'];
 
- $con = mysqli_connect("localhost","root","bose123$","bankdb");
-
+ $con = mysqli_connect("localhost","groot","bose123$","bankdb");
+echo "hello Wordls";
+ if($con->connect_errno)
+ 	{
+	echo $con->connect_error;
+   die('Unable to connect to database [' . $con->connect_error . ']');
+	} 
  
  //$aid= mysqli_real_escape_string($con,$aid);	
 

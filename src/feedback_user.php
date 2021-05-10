@@ -23,7 +23,7 @@ session_start();
 
 $username=$_SESSION["uname"];
 
-$con=mysqli_connect("localhost","root","bose123$","bankdb");
+$con=mysqli_connect("localhost","groot","bose123$","bankdb");
 
 $query="UPDATE banktable SET feedback='$feedback' WHERE username='$username'";
 
