@@ -2,7 +2,17 @@
 
 
 # Start Apache
-
+echo -n "Do you want to connect on SSH to docker Instance? (Yes/No):"
+read ch
+if [[ "$ch" == "yes" || "$ch" = "y" || "$ch" = "yes" || "$ch" = "Y" ]]; then
+echo -n "Enter the username: "
+read username
+echo -n "Enter the password: "
+read -s password
+adduser --gecos "" --disabled-password $username
+chpasswd <<<"$username:$password"
+service ssh start
+fi
 
 #mysql.server start
 
