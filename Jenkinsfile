@@ -37,7 +37,7 @@ pipeline {
       }
     }
 
-
+  }
 
     // Acceptance Tests
   
