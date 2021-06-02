@@ -4,7 +4,6 @@ $file=trim($_GET['file']);
 
 echo "$file";
 
-
 file_download($file);
 
 function file_download($download)
