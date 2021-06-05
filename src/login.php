@@ -56,7 +56,6 @@ $_SESSION["uname"]=$username;
 header("location:profile.php");
 
 
-
 }
 else
 {
