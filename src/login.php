@@ -55,6 +55,7 @@ $_SESSION["uname"]=$username;
 
 header("location:profile.php");
 
+//change is the law of life
 }
 else
 {
