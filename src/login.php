@@ -54,7 +54,7 @@ session_regenerate_id();
 $_SESSION["uname"]=$username;
 
 header("location:profile.php");
-
+//krishna
 }
 else
 {
