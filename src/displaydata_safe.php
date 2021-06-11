@@ -6,7 +6,6 @@ Account: <input type="text" name="aid"> <br><br>
 <input type="submit" value="getAccount">
 </form>
 
-
 <?php
 session_start();
 if(isset($_GET['aid']) )
