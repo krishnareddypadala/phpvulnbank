@@ -2,10 +2,10 @@ FROM ubuntu:18.04
 RUN apt-get update 
 RUN apt-get upgrade -y
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt install -y php php-mysql
+RUN apt-get install -y php php-mysql
 RUN apt-get install apache2 libapache2-mod-php -y
 RUN apt-get install php-dom -y
-RUN apt install mysql-server -y
+RUN apt-get install mysql-server -y
 RUN apt-get update --fix-missing
 RUN apt install openssh-server -y
 
