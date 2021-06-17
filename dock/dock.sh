@@ -24,7 +24,8 @@ mysql -u root -e  "source /usr/sbin/banktable.sql"
 
 
 echo " * Starting Apache Server...! "
-/usr/sbin/apachectl  start
+#/usr/sbin/apachectl  start
+service apache2 restart
 
 echo "phpvulnbank is up .. You can access http://localhost:8090/phpvulnbank/login.php"
 
