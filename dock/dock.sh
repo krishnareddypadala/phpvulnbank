@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 # Start Apache
 #echo -n "Do you want to connect on SSH to docker Instance? (Yes/NO):"
 #read ch
