@@ -11,8 +11,8 @@ username:<input type="text" name='uname' value=<?php if(isset($_POST["uname"])) 
 
 </form>
 <br>
-<a href="register.html">Register(xml)</a> | 
-<a href="regjson.html">Register(json)</a><br>
+<a href="api/register.html">Register(xml)</a> | 
+<a href="api/regjson.html">Register(json)</a><br>
 
 
 <?php if(isset($_POST["uname"])) echo ("Wrong username or Passwords"); ?>

@@ -3,7 +3,6 @@
 $json = file_get_contents('php://input');
 
 $info = json_decode($json);
-
 $name = $info->{'name'};
 $tel = $info->{'tel'};
 $email = $info->{'email'};
