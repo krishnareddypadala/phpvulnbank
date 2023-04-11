@@ -1,5 +1,6 @@
 #!groovy
-test
+hello
+test 
 pipeline {
   agent any
 
