@@ -1,4 +1,5 @@
 #!groovy
+//start
 
 pipeline {
   agent any
