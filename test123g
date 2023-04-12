@@ -4,10 +4,10 @@ pipeline {
   agent any
 
   environment {
-    git_commit_message = ''
-    git_commit_diff = ''
-    git_commit_author = ''
-    git_commit_author_name = ''
+    git_commit_message = 'Test'
+    git_commit_diff = 'NO diff'
+    git_commit_author = 'Rakesh-az'
+    git_commit_author_name = 'Rakesh'
     git_commit_author_email = ''
   }
 
