@@ -5,8 +5,7 @@ pipeline {
     stage ('Call Powershell Script to run SourceCodeAnalyzer')
     {
         steps {
-            sh "./DevSecOpS/fortifyscan.ps"
-            PowerShell(".\\DevSecOpS\\fortifyscan.ps") 
+            bat  "powershell DevSecOpS/fortifyscan.ps"
         }
     }
   }
