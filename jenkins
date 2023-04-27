@@ -1,10 +1,12 @@
 pipeline {
   agent any
   stages {
-    stage('hello') {
-      steps {
-        sh 'DevSecOpS/fortifyscan.ps'
-      }
+
+    stage ('Call Powershell Script to run SourceCodeAnalyzer')
+    {
+        node ('sca') {
+            PowerShell(". '.\\DevSecOpS\\fortifyscan.ps'") 
+        }
     }
   }
 }
