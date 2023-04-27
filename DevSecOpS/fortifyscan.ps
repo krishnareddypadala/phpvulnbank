@@ -1,12 +1,12 @@
-sourceanalyzer -b "vulnb" -clean
-sourceanalyzer -b "vulnb"  /**/*
-sourceanalyzer -b "vulnb"  --show-files
-sourceanalyzer -b "vulnb"  -scan > vuln.txt
+sourceanalyzer -b "sree-php-vulnerabilities" -clean
+sourceanalyzer -b "sree-php-vulnerabilities"  /**/*
+sourceanalyzer -b "sree-php-vulnerabilities"  --show-files
+sourceanalyzer -b "sree-php-vulnerabilities"  -scan > sree-php-vulnerabilities.txt
 
-$cr=(Select-String -Path .\vuln.txt -Pattern "Critical").length
-$hi=(Select-String -Path .\vuln.txt -Pattern "High").length
-$me=(Select-String -Path .\vuln.txt -Pattern "Medium").length
-$lo=(Select-String -Path .\vuln.txt -Pattern "Low").length
+$cr=(Select-String -Path .\sree-php-vulnerabilities.txt -Pattern "Critical").length
+$hi=(Select-String -Path .\sree-php-vulnerabilities.txt -Pattern "High").length
+$me=(Select-String -Path .\sree-php-vulnerabilities.txt -Pattern "Medium").length
+$lo=(Select-String -Path .\sree-php-vulnerabilities.txt -Pattern "Low").length
 
 
 Write-Host "Critical Vulnerabilities:"$cr
