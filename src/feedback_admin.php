@@ -8,6 +8,7 @@
 
 
 <?php
+require __DIR__ . '/admincheck.php';
 
 session_start();
 
@@ -15,7 +16,7 @@ session_start();
 	{ 
 		$user=$_SESSION['uname'];
 
-	if($user=="admin")
+	if(admincheck() == TRUE)
 		{
 		$con = mysqli_connect("localhost","groot","bose123$","bankdb");
 	 

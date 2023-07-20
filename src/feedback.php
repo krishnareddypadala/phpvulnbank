@@ -1,25 +1,9 @@
 <?php
-session_start();
-  if(isset($_SESSION['uname']))
-	{
+require __DIR__ . '/admincheck.php';
 
-	$user = $_SESSION['uname'];
-	echo $user;
-	
-	If($user == "admin")
-	{
-	header('Location:feedback_admin.php');
-	}
-	else
-	{
-	header('Location:feedback_user.php');
-	}
-		
-	}
-
-	else
-	{
-		echo "Out of session"; 		
-	}
+if(admincheck() == TRUE)
+header('Location:feedback_admin.php');
+else
+header('Location:feedback_user.php');
 
 ?>

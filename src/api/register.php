@@ -25,8 +25,8 @@ echo "Already registered with username <b> $name </b> or email id <b> $email </b
 else
 
 {
-mysqli_query($con,"INSERT INTO banktable(username,password,balance,feedback,mobile,email)VALUES('$name','$password',0,'nofeedback','$tel','$email');");
-echo "Registration completed";
+    mysqli_query($con,"INSERT INTO banktable(username,password,balance,feedback,mobile,email,active,admin)VALUES('$name',md5('$password'),0,'nofeedback','$tel','$email','0','0');");
+    echo "Registration completed , Activation is pending";
 
 }
 

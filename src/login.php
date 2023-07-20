@@ -15,10 +15,9 @@ username:<input type="text" name='uname' value=<?php if(isset($_POST["uname"])) 
 <a href="api/regjson.html">Register(json)</a><br>
 
 
-<?php if(isset($_POST["uname"])) echo ("Wrong username or Passwords"); ?>
+<?php if(isset($_POST["uname"])) echo ("Wrong Username/Password or Inactive user"); ?>
 
 </html>
-
 
 <?php
 
@@ -38,7 +37,7 @@ $con=mysqli_connect("localhost","groot","bose123$","bankdb");
 
 
 
-$query="select * from banktable where username='$username' and password='$password'";
+$query="select * from banktable where username='$username' and password=MD5('$password') and active='1'";
 
 //select * from banktable where username='krishna' and password='bose123$'
 

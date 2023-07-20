@@ -1,4 +1,6 @@
 <?php
+
+
 session_start();
 if(isset($_SESSION['uname']))
 {
@@ -44,20 +46,13 @@ header('Location:login.php');
 <br><br> <a href='logout.php'>Signout</a> | <a href='transfer.php'>Transfer</a> | <a href='feedback.php'>Feedback</a>  
 
 <?php
-session_start();
-  if(isset($_SESSION['uname']))
-	{
-
-		$user = $_SESSION['uname'];
+	require __DIR__ . '/admincheck.php';
 	
-		If($user == "admin")
+		If(admincheck() == TRUE)
 			{
-				echo "|<a href='validatekyc.php'>ValidateKyc</a>";
+				echo "|<a href='validatekyc.php'>ValidateKyc</a>| <a href='activate.php'>Activate Users</a>";
 	
 				}
-		
-	}
-
 
 ?>
 
