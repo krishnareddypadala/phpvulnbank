@@ -1,27 +1,42 @@
 <html>
 
-List Users pending for activation:
-
-<form action="activate.php" method="POST">
-<label for="user">Choose a user:</label>
-<select name="user" id="user">
 <?php
+require __DIR__ . '/admincheck.php';
+session_start();
+$user=$_SESSION['uname'];
+echo "Hello $user";
 
-$con=mysqli_connect("localhost","groot","bose123$","bankdb");
-$result=mysqli_query($con,"select * from banktable where active='0'");
-$num=mysqli_num_rows($result);
+if(admincheck() == TRUE)
+    {
+        $con=mysqli_connect("localhost","groot","bose123$","bankdb");
+        $result=mysqli_query($con,"select * from banktable where active='0'");
+        $num=mysqli_num_rows($result);
+        
+        echo "<br><br>Number of activations pending: $num <br><br>";
+        if($num >0)
+        {
+        echo"<form action='activate.php' method='POST'> <label for='user'>Choose a user:</label> <select name='user' id='user'>";
 
- for($i=0;$i<$num;$i++)
- {
- $row = mysqli_fetch_row($result);
- echo "<option value='$row[1]''>$row[1]</option> ";
- }
+        for($i=0;$i<$num;$i++)
+        {
+        $row = mysqli_fetch_row($result);
+        echo "<option value='$row[1]''>$row[1]</option> ";
+        }
+
+        echo " </select> <br><br> <input type='submit' name='submit' value='activate'> </form>";
+        }
+
+    }
+    else
+    {
+        echo "<br><br>You are not admin..!! <br><br>";
+    }
+
 ?>
- </select>
-  <br><br>
-  <input type="submit" name="submit" value="activate">
 
+<a href="profile.php">profile</a>
+<br><br>
+<a href="logout.php">SignOut</a>
 
-</form>
 
 <html>

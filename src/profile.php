@@ -47,10 +47,10 @@ header('Location:login.php');
 
 <?php
 	require __DIR__ . '/admincheck.php';
-	
+
 		If(admincheck() == TRUE)
 			{
-				echo "|<a href='validatekyc.php'>ValidateKyc</a>| <a href='activate.php'>Activate Users</a>";
+				echo "|<a href='validatekyc.php'>ValidateKyc</a>| <a href='activateform.php'>Activate Users</a>";
 	
 				}
 

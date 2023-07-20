@@ -27,6 +27,7 @@ function adminCheck()
 	else
 	{
 		echo "Out of session"; 
+		header("location:logout.php");
 		
 	}
 
