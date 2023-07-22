@@ -1,3 +1,4 @@
+<?php include "ui/header2.php";?>
 <html>
 
 <?php
@@ -40,3 +41,5 @@ if(admincheck() == TRUE)
 
 
 <html>
+
+<?php include "ui/footer.php"; ?>

@@ -1,3 +1,4 @@
+<?php include "ui/header2.php";?>
 <?php
 
 $file=trim($_GET['file']);
@@ -19,3 +20,5 @@ restore_error_handler();
 
 
 ?>
+
+<?php include "ui/footer.php"; ?>

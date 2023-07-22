@@ -1,3 +1,4 @@
+<?php include "ui/header2.php";?>
 <html>
 
 <form name="id" method="GET" action="displaydata_safe.php">
@@ -42,3 +43,5 @@ else
 ?>
 
 </html>
+
+<?php include "ui/footer.php"; ?>

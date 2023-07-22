@@ -1,3 +1,5 @@
+
+<?php include "ui/header2.php";?>
 <html>
 
 
@@ -86,3 +88,5 @@ else
 ?>
 
 </html>
+
+<?php include "ui/footer.php"; ?>

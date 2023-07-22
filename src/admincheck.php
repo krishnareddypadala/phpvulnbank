@@ -1,3 +1,4 @@
+
 <?php
 function adminCheck()
 {
@@ -26,7 +27,7 @@ function adminCheck()
 
 	else
 	{
-		echo "Out of session"; 
+		echo "<script>alert('Out of session.. Please login')</script>"; 
 		header("location:logout.php");
 		
 	}

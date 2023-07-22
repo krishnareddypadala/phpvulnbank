@@ -1,3 +1,4 @@
+<?php include "ui/header2.php";?>
 <?php
 if(isset($_POST["user"]))
 {
@@ -19,3 +20,5 @@ else
 <a href="profile.php">Click here to goto Profile</a>  
 <br><br>
 <a href="activateform.php">Click here to activate another user</a><br>
+
+<?php include "ui/footer.php"; ?>

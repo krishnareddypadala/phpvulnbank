@@ -33,8 +33,9 @@
         }
 
         footer {
-            background-color: #eee;
-            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
             text-align: center;
         }
     </style>
@@ -44,6 +45,6 @@
         <h1>Welcome to PHP VULN BANK</h1>
     </header>
      </main>
-        
+        <p></p>
     </main>
-	<nav>
+	

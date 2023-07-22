@@ -1,3 +1,4 @@
+<?php include "ui/header2.php";?>
 <?php
 require __DIR__ . '/admincheck.php';
 
@@ -7,3 +8,4 @@ else
 header('Location:feedback_user.php');
 
 ?>
+<?php include "ui/footer.php"; ?>

@@ -1,8 +1,10 @@
+<?php include "../ui/header2.php";?>
+<nav>
 <html>
 
 <body>
 
-<h2>Register New User</h2>
+<h2>Register New User(with JSON Object)</h2>
 
 
 Name:<input type="text" id="name" name="name" class="register"><br><br>
@@ -48,3 +50,5 @@ function createJSON()
 
 </body>
 </html>
+</nav>
+<?php include "../ui/footer.php";?>

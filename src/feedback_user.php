@@ -1,3 +1,4 @@
+<?php include "ui/header2.php";?>
 <html>
 
 <form name="feedback" method="POST" action="feedback_user.php">
@@ -33,3 +34,5 @@ echo "Feedback updated";
 }
 
 ?>
+
+<?php include "ui/footer.php"; ?>

@@ -13,8 +13,8 @@ username:<input type="text" name='uname' value=<?php if(isset($_POST["uname"])) 
 
 </form>
 <br>
-<a href="api/register.html">Register(xml)</a> | 
-<a href="api/regjson.html">Register(json)</a><br>
+<a href="api/regxml.php">Register(xml)</a> | 
+<a href="api/regjson.php">Register(json)</a><br>
 
 
 <?php if(isset($_POST["uname"])) echo ("Wrong Username/Password or Inactive user"); ?>

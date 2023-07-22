@@ -5,8 +5,8 @@
         <div class="row">
             <div class="col-md-4">
               
-            Follow Us:<a href="https://twitter.com/secgraymatter" style="color: white;">twitter/secgraymatter</a>
-           <br>Source Code:<a href="https://github.com/krishnareddypadala/phpvulnbank" style="color: white;">github</a>
+            Follow Us: <a href="https://twitter.com/secgraymatter" style="color: white;">twitter/secgraymatter</a>
+            <br><br>Source Code:<a href="https://github.com/krishnareddypadala/phpvulnbank" style="color: white;">github</a>
                 
             </div>
         </div>

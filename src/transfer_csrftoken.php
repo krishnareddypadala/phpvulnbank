@@ -1,6 +1,7 @@
+<?php include "ui/header2.php";?>
 <html>
 
-<form name="transfer" method="POST" action="transfer.php">
+<form name="transfer" method="POST" action="transfer_csrftoken.php">
 
 To Account : <input type="text" name="tacno"> <br><br>
 Transfer Amount: <input type="text" name="tamount"> <br><br>
@@ -85,3 +86,4 @@ if(isset($_SESSION['uname']))
 ?>
 
 </html>
+<?php include "ui/footer.php"; ?>

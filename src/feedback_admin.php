@@ -1,12 +1,5 @@
+<?php include "ui/header2.php";?>
 <html>
-
-<br><br> <a href='logout.php'>Signout</a>
-
-<br><br> <a href='transfer.php'>Transfer</a>
-
-<br><br> <a href='profile.php'>Profile</a> <br><br>
-
-
 <?php
 require __DIR__ . '/admincheck.php';
 
@@ -45,5 +38,8 @@ else
 
 
 ?>
+<br><br> <a href='logout.php'>Signout</a> | <a href='transfer.php'>Transfer</a> | <a href='profile.php'>Profile</a> <br><br>
 
 </html>
+
+<?php include "ui/footer.php"; ?>

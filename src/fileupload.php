@@ -1,3 +1,4 @@
+<?php include "ui/header2.php";?>
 <html>
    <body>
 <br><br>
@@ -53,3 +54,4 @@
    }
 
 ?>
+<?php include "ui/footer.php"; ?>

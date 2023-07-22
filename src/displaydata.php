@@ -1,3 +1,4 @@
+<?php include "ui/header2.php";?>
 <html>
 
 <form name="id" method="GET" action="displaydata.php">
@@ -35,3 +36,5 @@ echo "hello Wordls";
 ?>
 
 </html>
+
+<?php include "ui/footer.php"; ?>

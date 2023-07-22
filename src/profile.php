@@ -1,7 +1,5 @@
-<?php include "ui/header.php";?>
-<?php include "ui/footer.php"; ?>
+<?php include "ui/header2.php";?>
 <?php
-
 
 session_start();
 if(isset($_SESSION['uname']))
@@ -60,3 +58,7 @@ header('Location:login.php');
 
 
 <br><br> <a href='displaydata.php'>Show Password</a> | <a href='fileupload.php'>Know Your Customer(KYC)</a>
+
+
+
+<?php include "ui/footer.php"; ?>

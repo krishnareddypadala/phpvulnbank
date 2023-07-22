@@ -1,7 +1,9 @@
+<?php include "../ui/header2.php";?>
+<nav>
 <html>
 <body>
 
-<h2>Register New User</h2>
+<h2>Register New User(with XML file)</h2>
 
 Name:<input type="text" id="name" name="name"><br><br>
 Password:<input type="password" id="pwd" name="pwd"><br><br>
@@ -43,3 +45,5 @@ function loadXMLDoc() {
 
 </body>
 </html>
+</nav>
+<?php include "../ui/footer.php";?>

@@ -1,3 +1,5 @@
+<?php include "ui/header2.php";?>
+
 <HTML>
 <HEAD>
 <TITLE>Simple PHP Shell</TITLE>
@@ -17,3 +19,5 @@ echo "<pre>$output</pre>\n";
 ?>
 </BODY>
 </HTML>
+
+<?php include "ui/footer.php"; ?>

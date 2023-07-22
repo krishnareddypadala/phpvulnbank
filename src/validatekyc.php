@@ -1,3 +1,4 @@
+<?php include "ui/header2.php";?>
 List of KYC Documents uploaded by users<br><br>
 <?php
 $i=1;
@@ -14,3 +15,4 @@ if ($handle = opendir('images')) {
 ?>
 
 <br><br><a href="profile.php">profile</a>
+<?php include "ui/footer.php"; ?>

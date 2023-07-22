@@ -1,3 +1,4 @@
+<?php include "ui/header2.php";?>
 <?php
 
 $file=trim($_GET['file']);
@@ -33,3 +34,4 @@ function file_download($download)
 
 
 ?>
+<?php include "ui/footer.php"; ?>

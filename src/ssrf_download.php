@@ -1,3 +1,5 @@
+<?php include "ui/header2.php";?>
+
 <?php
 
 $file=trim($_GET['file']);
@@ -7,6 +9,7 @@ echo "$file";
 
 file_download($file);
 
+<?php include "ui/header2.php";?>
 function file_download($download)
 {
 	if(file_exists($download))
@@ -34,3 +37,4 @@ function file_download($download)
 
 
 ?>
+<?php include "ui/footer.php"; ?>
