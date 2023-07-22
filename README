@@ -1,9 +1,3 @@
-To run phpvulnbank with docker
-Go to command prompt and run below command.
-docker run -it -p 8090:80 -p 22:22  krishnapadala55/phpvulnbank:1.0
-
-![Example](Media/docker_phpvulnbank.gif) 
-
 # PHPVulnBank
 
 PHPVulnBank is an open-source web application aimed at demonstrating common vulnerabilities found in PHP-based web applications. It is hosted on GitHub as a repository, providing developers and security enthusiasts with a valuable resource to learn about and understand various security issues that can arise in PHP programs.
@@ -38,7 +32,7 @@ To get started with PHPVulnBank, follow these steps:
 Go to command prompt and run below command.
 docker run -it -p 8090:80 -p 22:22  krishnapadala55/phpvulnbank:23.071
 
-![PHPVulnBank Demo](/Media/docker_phpvulnbank.gif)
+![](https://github.com/Media/docker_phpvulnbank.gif)
 
 ## Contributing
 
