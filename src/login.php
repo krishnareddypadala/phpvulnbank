@@ -1,3 +1,5 @@
+<?php include "ui/header.php";?>
+
 <html>
 <h1>Enter username and password</h1>
 
@@ -72,3 +74,4 @@ echo "<br><br>you are not $username";
 
 
 ?>
+<?php include "ui/footer.php"; ?>

@@ -4,4 +4,58 @@ docker run -it -p 8090:80 -p 22:22  krishnapadala55/phpvulnbank:1.0
 
 ![Example](Media/docker_phpvulnbank.gif) 
 
+# PHPVulnBank
 
+PHPVulnBank is an open-source web application aimed at demonstrating common vulnerabilities found in PHP-based web applications. It is hosted on GitHub as a repository, providing developers and security enthusiasts with a valuable resource to learn about and understand various security issues that can arise in PHP programs.
+
+## Objective
+
+The primary objective of PHPVulnBank is to educate developers and security engineers on secure coding practices and help them identify and mitigate vulnerabilities in their PHP projects. By exploring the vulnerable code and vulnerabilities present in PHPVulnBank, developers can gain a deep understanding of how these security issues are introduced in PHP applications and the potential risks associated with them.
+
+## Features
+
+- Demonstrates multiple vulnerabilities commonly found in PHP web applications.
+- Covers vulnerabilities such as SQL Injection, Cross-Site Scripting (XSS), Cross-Site Request Forgery (CSRF), and Remote Code Execution (RCE), among others.
+- Provides solutions or patches to fix the vulnerabilities, promoting secure coding practices.
+
+## Getting Started
+
+To get started with PHPVulnBank, follow these steps:
+
+1. Clone the GitHub repository:
+   ```
+   git clone https://github.com/krishnareddypadala/phpvulnbank.git
+   ```
+
+2. Set up a web server (e.g., Apache) and configure it to serve the PHPVulnBank directory.
+
+3. Import the provided `banktable.sql` file into your MySQL database. 
+
+4. Access the PHPVulnBank application through your web browser.
+
+## phpvulnbank on docker
+
+Go to command prompt and run below command.
+docker run -it -p 8090:80 -p 22:22  krishnapadala55/phpvulnbank:23.071
+
+![PHPVulnBank Demo](/Media/docker_phpvulnbank.gif)
+
+## Contributing
+
+We welcome contributions to PHPVulnBank! If you have any bug reports, suggestions, or improvements, please feel free to open an issue in the repository's issue tracker. We also encourage you to submit pull requests with new features, fixes, or additional vulnerabilities.
+
+Please ensure that any pull requests or contributions adhere to our guidelines to maintain the quality of PHPVulnBank.
+
+## Community
+
+PHPVulnBank has a thriving community of developers and security professionals. You can join the conversation, get help, or share your findings by participating in discussions and exploring the issues in the repository.
+
+## License
+
+PHPVulnBank is released under the [MIT License](https://opensource.org/licenses/MIT), which allows you to modify and distribute the application. However, please be mindful of the implications when using PHPVulnBank or its code in production environments.
+
+## Conclusion
+
+PHPVulnBank GitHub repository serves as an educational platform for developers and security enthusiasts to learn about and understand common vulnerabilities in PHP web applications. It provides a comprehensive range of vulnerabilities, solutions, and challenges to help you improve your understanding of PHP security and reinforce secure coding practices.
+
+We hope you find PHPVulnBank useful in enhancing your knowledge of PHP security and strengthening the security of your own PHP projects.

@@ -11,7 +11,7 @@
 #adduser --gecos "" --disabled-password $username
 #chpasswd <<<"$username:$password"
 #chown -R $username /var/www/html
-#service ssh start
+#service ssh start 
 #fi
 
 #mysql.server start
