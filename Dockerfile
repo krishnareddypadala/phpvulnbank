@@ -11,7 +11,7 @@ RUN apt-get update --fix-missing
 RUN apt install openssh-server -y
 
 
-COPY /src/ /var/www/html/phpvulnbank/
+COPY /src/ /var/www/html/
 COPY /dock/ /usr/sbin/
 COPY /dbscript/ /usr/sbin/ 
 
