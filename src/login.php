@@ -61,10 +61,10 @@ header("location:profile.php");
 else
 {
 
-//$enusername=htmlspecialchars($username);
+$enusername=htmlspecialchars($username);
 //$output=`$username`;
 
-echo "<br><br>you are not $username";
+echo "<br><br>you are not $enusername";
 
 //header("location:login.php");
 
@@ -74,4 +74,4 @@ echo "<br><br>you are not $username";
 
 
 ?>
-<?php include "ui/footer.php"; ?>
+<?php include "ui/footer2.php"; ?>

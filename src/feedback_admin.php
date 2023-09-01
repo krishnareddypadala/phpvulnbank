@@ -14,7 +14,9 @@ session_start();
 		$con = mysqli_connect("localhost","groot","bose123$","bankdb");
 	 
 		$result=mysqli_query($con,"select * from banktable");
-		for($i=1;$i<6;$i++)
+		$num=mysqli_num_rows($result);
+
+		for($i=1;$i<$num;$i++)
 			{ 
 			$row=mysqli_fetch_row($result);
 			$user=$row[1];

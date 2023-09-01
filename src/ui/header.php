@@ -44,8 +44,4 @@
     <header>
         <h1>Welcome to PHP VULN BANK</h1>
     </header>
-     </main>
-        <p>PHPVulnBank is an open-source web application aimed at demonstrating common vulnerabilities found in PHP-based web applications. It is hosted on GitHub as a repository, providing developers and security enthusiasts with a valuable resource to learn about and understand various security issues that can arise in Web Applications. </p>
-		<b>Administrator role credentials #</b> username: <i>admin</i> ,password: <i>krishna1$</i> 	| <b>User role credentials#</b> 	username: <i>krishna</i> ,	password: <i>happay123$</i>
-    </main>
-	<nav>
+  	<nav>
