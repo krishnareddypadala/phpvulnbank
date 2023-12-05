@@ -26,7 +26,7 @@ foreach ($alertitem in $alertitems){
         $medium=$medium+$alertitem.Count
     }
 
-    if($alertitem.riskcode -eq 0)
+    if($alertitem.riskcode -eq 3)
     {
         $high=$high+$alertitem.Count
     }
