@@ -14,7 +14,7 @@ if(isset($_GET['aid']) )
   	$aid = $_GET['aid'];
 
 
-$con = mysqli_connect("localhost","groot","bose123$","bankdb");
+$con = mysqli_connect("127.0.0.1","groot","bose123$","bankdb");
 
 $query= "select username,password FROM banktable where acno=?";
 

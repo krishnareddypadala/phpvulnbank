@@ -3,7 +3,7 @@
 if(isset($_POST["user"]))
 {
 $usertoactivate=$_POST["user"];
-$con=mysqli_connect("localhost","groot","bose123$","bankdb");
+$con=mysqli_connect("127.0.0.1","groot","bose123$","bankdb");
 $query="UPDATE banktable SET active='1' WHERE username='$usertoactivate'";
 $result=mysqli_query($con,$query);
 echo "<br><br><p>User $usertoactivate is Activated .. </p><br><br>";

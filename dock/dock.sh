@@ -27,7 +27,7 @@ echo " * Starting Apache Server...! "
 #/usr/sbin/apachectl  start
 service apache2 restart
 
-echo "phpvulnbank is up .. You can access http://localhost:8090/phpvulnbank/login.php"
+echo "phpvulnbank is up .. You can access http://localhost:8090/login.php"
 
 /bin/bash
 #To start docker run -it -p 8090:80 phpvulnbank

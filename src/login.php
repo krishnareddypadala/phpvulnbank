@@ -30,7 +30,14 @@ $password=$_POST["pwd"];
 session_start();
 //$_SESSION["uname"]=$username;
 
-$con=mysqli_connect("localhost","groot","bose123$","bankdb");
+try {
+    $con=mysqli_connect("127.0.0.1","groot","bose123$","bankdb");
+    echo "Hurrah!";
+} catch (mysqli_sql_exception $e) {
+    die("Couldn't make the connection: " . $e->getMessage());
+}
+
+
 
 //$username=mysqli_real_escape_string ($con,$username);
 //$password=mysqli_real_escape_string ($con,$password);
@@ -42,6 +49,8 @@ $con=mysqli_connect("localhost","groot","bose123$","bankdb");
 $query="select * from banktable where username='$username' and password=MD5('$password') and active='1'";
 
 //select * from banktable where username='krishna' and password='bose123$'
+
+
 
 $result=mysqli_query($con,$query);
 $num=mysqli_num_rows($result);

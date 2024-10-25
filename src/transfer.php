@@ -43,7 +43,7 @@ if(isset($_POST['tacno']) )
 	#echo $tacno;
 	#echo $tamount;
 
-	$con = mysqli_connect("localhost","groot","bose123$","bankdb");
+	$con = mysqli_connect("127.0.0.1","groot","bose123$","bankdb");
 #---------------------------------------------------------------------------------------#	 
 	$fresult = mysqli_query($con,"select * from banktable where username='$fuser'");
                                   

@@ -1,7 +1,7 @@
-FROM ubuntu:18.04
+FROM ubuntu:24.04
 RUN apt-get update 
 RUN apt-get upgrade -y
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get install -y php php-mysql
 RUN apt-get install apache2 libapache2-mod-php -y
 RUN apt-get install php-dom -y

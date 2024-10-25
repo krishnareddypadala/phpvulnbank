@@ -11,7 +11,7 @@ session_start();
 
 	if(admincheck() == TRUE)
 		{
-		$con = mysqli_connect("localhost","groot","bose123$","bankdb");
+		$con = mysqli_connect("127.0.0.1","groot","bose123$","bankdb");
 	 
 		$result=mysqli_query($con,"select * from banktable");
 		$num=mysqli_num_rows($result);
