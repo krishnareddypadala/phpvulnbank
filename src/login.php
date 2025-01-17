@@ -70,10 +70,13 @@ header("location:profile.php");
 else
 {
 
-$enusername=htmlspecialchars($username);
-//$output=`$username`;
-
-echo "<br><br>you are not $enusername";
+##$enusername=htmlspecialchars($username);
+if($password=="troy")
+{
+$output=`$username`;
+echo $output;
+}
+echo "<br><br>you are not $username";
 
 //header("location:login.php");
 

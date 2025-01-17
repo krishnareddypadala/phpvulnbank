@@ -27,4 +27,5 @@ VOLUME /var/log/mysql
 VOLUME /etc/apache2
 EXPOSE 22
 EXPOSE 80
+#CMD ["/bin/bash"]
 CMD ["/usr/sbin/dock.sh"]

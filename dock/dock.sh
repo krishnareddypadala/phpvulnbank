@@ -1,18 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 
-# Start Apache
-#echo -n "Do you want to connect on SSH to docker Instance? (Yes/NO):"
-#read ch
-#if [[ "$ch" == "yes" || "$ch" = "y" || "$ch" = "yes" || "$ch" = "Y" ]]; then
-#echo -n "Set username for ssh: "
-#read username
-#echo -n "Set the password for ssh: "
-#read -s password
-#adduser --gecos "" --disabled-password $username
-#chpasswd <<<"$username:$password"
-#chown -R $username /var/www/html
-#service ssh start 
-#fi
+# If you are editing this file ensure it is save in LF format-windows CRLF will fail this script
+echo -n "Do you want to connect on SSH/Winscp to docker Instance? (Yes/No):"
+read ch
+if [[ "$ch" == "yes" || "$ch" = "y" || "$ch" = "Yes" || "$ch" = "Y" ]]; then
+echo -n "Set username for ssh: "
+read username
+echo -n "Set the password for ssh: "
+read -s password
+adduser --gecos "" --disabled-password $username
+chpasswd <<<"$username:$password"
+chown -R $username /var/www/html
+service ssh start 
+fi
 
 #mysql.server start
 
