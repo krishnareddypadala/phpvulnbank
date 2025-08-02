@@ -17,7 +17,7 @@ if(isset($_GET['aid']) )
   	$aid = $_GET['aid'];
 
  $con = mysqli_connect("127.0.0.1","groot","bose123$","bankdb");
-echo "hello Wordls";
+echo "hello World";
  if($con->connect_errno)
  	{
 	echo $con->connect_error;
