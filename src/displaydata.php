@@ -12,12 +12,12 @@ Account: <input type="text" name="aid" value=<?php $_GET['aid'];?> > <br><br>
 
 <?php
 session_start();
-if(isset($_GET['aid']) )
+if(isset($_SESSION['uname'];) )
 {
-  	$aid = $_GET['aid'];
+  	$user=$_SESSION['uname'];
 
  $con = mysqli_connect("127.0.0.1","groot","bose123$","bankdb");
-echo "hello World";
+echo "hello $user";
  if($con->connect_errno)
  	{
 	echo $con->connect_error;
@@ -26,7 +26,7 @@ echo "hello World";
  
  //$aid= mysqli_real_escape_string($con,$aid);	
 
- $result=mysqli_query($con,"select * from banktable where acno=$aid");
+ $result=mysqli_query($con,"select * from banktable where username='$user'");
  
  $row = mysqli_fetch_row($result);
 
