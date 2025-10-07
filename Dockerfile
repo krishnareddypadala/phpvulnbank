@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:24.10
 RUN apt-get update 
 RUN apt-get upgrade -y
 ENV DEBIAN_FRONTEND=noninteractive
