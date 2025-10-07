@@ -1,12 +1,12 @@
 <?php include "ui/header2.php";?>
 <html>
-
+<!--
 <form name="id" method="GET" action="displaydata.php">
 
-Account: <input type="text" name="aid"> <br><br>
+Account: <input type="text" name="aid" value=<?php $_GET['aid'];?> > <br><br>
 <input type="submit" value="getAccount">
 </form>
-
+-->
  <a href='profile.php'>profile</a>
 
 
@@ -17,7 +17,7 @@ if(isset($_GET['aid']) )
   	$aid = $_GET['aid'];
 
  $con = mysqli_connect("127.0.0.1","groot","bose123$","bankdb");
-echo "hello Wordls";
+echo "hello World";
  if($con->connect_errno)
  	{
 	echo $con->connect_error;
