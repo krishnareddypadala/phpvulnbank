@@ -281,19 +281,24 @@ Flagging explicitly for the guardrails discussion, not as a question about wheth
 - **`dock/dock.sh`** — the container entrypoint **prompts interactively** (`read ch`) for SSH account creation, so the container only starts under `-it`. Any CI that runs it non-interactively will hang. This must change for a docker-compose workflow.
 - MySQL is bootstrapped with `mysql -u root` and no password; the SQL script grants `groot` `ALL PRIVILEGES ON *.*` (VULN-22).
 - **Image tag mismatch** — the README says `krishnapadala55/phpvulnbank:25.04` while the Dockerfile base is `ubuntu:24.04`. Harmless but confusing; align them.
-- **`DevSecOpS/DAST_Scan_Zap.ps1`** targets `http://127.0.0.1:8090/phpvulnbank/`, but `dock.sh` prints `http://localhost:8090/login.php`. The scan path looks wrong for the container layout — it would find nothing at that URL. Worth verifying before treating the archived DAST results as a baseline.
-- **`DevSecOpS/fortifyscan.ps`** is a duplicate of `fortifyscan.ps1` left behind by a rename (commit `b523854`). Delete it.
-- **`Jenkinsfile`** — every Fortify parameter is an empty string, so the pipeline is a skeleton rather than a working scan. It begins with `#!groovy` followed by `#`-prefixed lines, which are not valid Groovy comments.
-- **Azure Pipelines have been removed.** `azure-pipelines.yml` (a Docker build) and `azure-pipelines-1.yml` (the untouched `echo Hello, world!` starter template) were deleted in July 2026. Note that deleting the YAML does **not** delete the pipeline definitions themselves — those live in Azure DevOps and must be removed there too, or their checks keep appearing on pull requests.
+- **All legacy CI has been removed** (July 2026). For the record, since the analysis informed the port and the archived DAST report still refers to it:
+  - `DevSecOpS/DAST_Scan_Zap.ps1` targeted `http://127.0.0.1:8090/phpvulnbank/`, but `dock.sh` printed `http://localhost:8090/login.php` — the scan path looked wrong for the container layout and would have found nothing at that URL. Treat the archived DAST results with that in mind.
+  - `DevSecOpS/fortifyscan.ps` was a duplicate of `fortifyscan.ps1` left behind by a rename (commit `b523854`).
+  - `Jenkinsfile` had every Fortify parameter set to an empty string, so it was a skeleton rather than a working scan, and opened with `#!groovy` followed by `#`-prefixed lines that are not valid Groovy comments.
+  - `azure-pipelines.yml` (a Docker build) and `azure-pipelines-1.yml` (the untouched `echo Hello, world!` starter template).
+
+  **Deleting these files does not remove the pipelines themselves.** The Azure DevOps definitions live outside this repository and must be deleted there, and the Azure Pipelines GitHub App's access revoked, or their checks keep appearing on pull requests.
+
+  Any replacement CI needs writing against the `laravel/` layout. `php artisan test` is the useful gate now — the exploitability suite fails when a lesson is silently repaired, which is the regression this project actually cares about.
 - **`.gitattributes`** sets `* text=auto`, which means `dock.sh` can be checked out with CRLF on Windows — exactly the failure the comment at the top of that script warns about. Add `*.sh text eol=lf`.
 
-Expect the SAST signal to drop sharply after the port, as the plan predicts in §9. Concretely: Fortify recognises Eloquent and Blade, so the interpolated-string SQLi that currently lights up across a dozen `mysqli_query()` calls will collapse to whatever the `LegacyQuery` helper exposes. That contrast is itself good DevSecOps material — but it means the before/after scan numbers are not comparable, and the old repo should stay tagged and reachable.
+Expect the SAST signal to drop sharply after the port, as the plan predicts in §9. Concretely: Fortify recognises Eloquent and Blade, so the interpolated-string SQLi that lit up across a dozen `mysqli_query()` calls collapses to whatever the `LegacyQuery` helper exposes. That contrast is itself good DevSecOps material — but it means the before/after scan numbers are not comparable, and the pre-port tree should stay tagged and reachable.
 
 ---
 
 ## 9. Coverage check
 
-All 31 PHP files under `src/` are accounted for: 24 ported with lessons (§3), 4 non-lesson UI includes plus 1 dead file (§5), 2 unparseable (§7.3). `dbscript/`, `dock/`, `payload/`, `DevSecOpS/` and the CI files are covered in §2, §7.5 and §8.
+All 31 PHP files under `src/` are accounted for: 24 ported with lessons (§3), 4 non-lesson UI includes plus 1 dead file (§5), 2 unparseable (§7.3). `dbscript/`, `dock/`, `payload/`, and the CI files (`DevSecOpS/`, `Jenkinsfile`, the Azure YAML — all since removed) are covered in §2, §7.5 and §8.
 
 **Next step:** Phase 2 (scaffold) is blocked on the §7.1 schema decision and unblocked for everything else. The §7.2 redirect decision is needed before Phase 5.
 
