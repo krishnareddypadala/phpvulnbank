@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V2\AdminController;
 use App\Http\Controllers\Api\V2\AuthController;
 use App\Http\Controllers\Api\V2\FeedbackController;
 use App\Http\Controllers\Api\V2\KycController;
+use App\Http\Controllers\Api\V2\OpenApiController;
 use App\Http\Controllers\Api\V2\RegisterController;
 use App\Http\Controllers\Api\V2\TransferController;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('v2')->group(function (): void {
+
+    // ---- Machine-readable API description --------------------------------
+    // Unauthenticated on purpose: students need the map, and a public endpoint
+    // inventory is itself worth noticing (OWASP API9).
+    Route::get('openapi.json', OpenApiController::class);
 
     // ---- Authentication --------------------------------------------------
     // VULN-01 SQLi bypass, VULN-02 troy backdoor (unauth RCE), VULN-14
