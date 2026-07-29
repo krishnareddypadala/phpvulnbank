@@ -1,5 +1,10 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Shell scripts must keep LF endings. `* text=auto` above checks them out with
+# CRLF on Windows, which makes them fail with "bad interpreter" inside a Linux
+# container -- exactly the failure dock/dock.sh warns about in its own header.
+*.sh text eol=lf
 # Custom for Visual Studio
 *.cs     diff=csharp
 
