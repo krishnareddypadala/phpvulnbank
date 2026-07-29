@@ -45,6 +45,31 @@ host that serves it. Treat a running instance as already compromised.
 - `APP_ENV=local` and `APP_DEBUG=true` are **lab settings**. They are
   intentional here (`VULN-23`) and must never be copied into a real project.
 
+## The MCP servers need isolation, not just localhost
+
+Two MCP servers ship with this lab (`phpvulnbank-api`, `phpvulnbank-db`). They
+change the threat model in a way the web app does not, and **"bind to
+localhost" does not address it** — the exposure is not network reachability, it
+is *client configuration*.
+
+MCP servers are normally registered in a developer's personal assistant client,
+alongside their real tools: filesystem, git, mail, ticketing. The stored
+prompt-injection payloads in this lab are written specifically to make a model
+take actions it was not asked to take, and they do not care which tools it has.
+Connect this server to a session that also holds real ones and the lab's data
+can reach them.
+
+- **Run it in a dedicated client profile with no other MCP servers connected.**
+- Both servers **fail closed**: they refuse to start unless `PHPVULNBANK_LAB=1`
+  is set deliberately.
+- Prefer **stdio** transport (`Mcp::local`), which is how they are registered.
+  Publishing them over HTTP would expose arbitrary SQL and a money-moving tool
+  on a network port.
+- `run_query` executes **model-composed SQL** on a connection that can drop
+  tables. Never point it at a database holding anything real.
+- **Assume every tool result reaches the model provider.** Seed data is
+  synthetic and must stay synthetic.
+
 ## Why Dependabot and scanners are noisy
 
 The lab deliberately keeps weak cryptography (unsalted MD5), disabled framework

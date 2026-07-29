@@ -1,0 +1,87 @@
+name: DAST
+
+# TEACHING MATERIAL -- deliberately NOT a gate, and deliberately NOT on every PR.
+#
+# This spins up an intentionally vulnerable application and attacks it. That is
+# fine on an ephemeral, isolated GitHub runner and nowhere else. It is manual
+# and scheduled only, so a vulnerable instance never starts as a side effect of
+# opening a pull request.
+#
+# The interesting output is not the findings list. It is the COVERAGE GAP:
+# compare what ZAP reports against the 28 lessons in docs/vulnerabilities.md.
+# A scanner will find reflected XSS and missing headers. It will not find the
+# IDOR, the negative-amount transfer, the race condition, the mass assignment,
+# or the `troy` backdoor -- because none of those are visible without knowing
+# what the application is supposed to do.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 1'   # Mondays, 03:00 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  zap:
+    name: OWASP ZAP full scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, dom, fileinfo, pdo_sqlite, sqlite3, zip, curl, intl
+          coverage: none
+
+      - name: Install and prepare the app
+        working-directory: laravel
+        run: |
+          composer install --no-interaction --prefer-dist --no-progress
+          cp .env.example .env
+          php artisan key:generate
+          touch database/database.sqlite
+          php artisan migrate:fresh --seed --force
+
+      - name: Serve the app
+        working-directory: laravel
+        run: |
+          php artisan serve --host=127.0.0.1 --port=8090 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8090/ >/dev/null && break
+            sleep 2
+          done
+          curl -sf http://127.0.0.1:8090/ >/dev/null || { echo "app did not start"; exit 1; }
+
+      - name: ZAP full scan
+        uses: zaproxy/action-full-scan@v0.12.0
+        with:
+          target: 'http://127.0.0.1:8090'
+          # This app is meant to fail a scan. Do not gate on it, and do not
+          # let the action open an issue on every run.
+          cmd_options: '-I'
+          allow_issue_writing: false
+          fail_action: false
+
+      - name: Frame the result
+        if: always()
+        run: |
+          {
+            echo "## DAST: read this as a coverage gap, not a score"
+            echo ""
+            echo "\`docs/vulnerabilities.md\` documents **28 implemented vulnerabilities**."
+            echo "Compare that number against what ZAP just reported."
+            echo ""
+            echo "A scanner reliably finds the shallow, signature-shaped ones -- reflected"
+            echo "XSS, missing security headers, verbose errors. It does not find:"
+            echo ""
+            echo "- **VULN-11** IDOR — every response is a valid 200; only a human knows the caller should not see that account"
+            echo "- **VULN-16** negative-amount transfers — requires understanding what a transfer means"
+            echo "- **VULN-17** the race condition — needs concurrency, not crawling"
+            echo "- **VULN-66** mass assignment — the request looks ordinary"
+            echo "- **VULN-02** the \`troy\` backdoor — no crawler guesses that password"
+            echo ""
+            echo "That gap is the lesson. Automated testing is a floor, not a ceiling."
+          } >> "$GITHUB_STEP_SUMMARY"
