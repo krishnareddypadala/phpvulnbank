@@ -10,7 +10,7 @@
 
 | # | Training topic | Implementable? | Vehicle |
 |---|---|---|---|
-| 1 | MCP in Application Security Workflows | **Yes** | `mcp-appsec` server over the existing DAST/Fortify pipeline (§7.1) |
+| 1 | MCP in Application Security Workflows | **Yes** | `mcp-appsec` server over a DAST pipeline (§7.1) — needs building, see note |
 | 2 | Secret Exposure | **Yes** | §6.1 |
 | 2 | Tool Poisoning | **Yes** | §6.2 — the most MCP-specific class in the list |
 | 2 | Context Injection | **Yes** | §6.3 — the `feedback` field is an ideal existing sink |
@@ -217,7 +217,11 @@ Direct access skips validation, the audit log, rate limiting, masking and every 
 
 ### 7.1 The `mcp-appsec` server
 
-The repo already carries a DevSecOps story — `Jenkinsfile`, `DevSecOpS/DAST_Scan_Zap.ps1`, the Fortify scripts, the archived DAST report. Exposing that over MCP is a natural extension and hosts a genuinely novel lesson.
+> **Update, July 2026:** the legacy CI (`Jenkinsfile`, `DevSecOpS/`, the Azure YAML) has been removed — it was written against the pre-port `src/` layout, and the Fortify and ZAP scripts were skeletons rather than working scans. The archived `DAST_PenTest_Run_by_Claude` report remains in the repository.
+>
+> This does not weaken the lesson below, but it does change the effort: `mcp-appsec` now needs a scan pipeline built against the `laravel/` layout rather than an existing one wrapped. Per §10.3, a recorded fixture report is the recommended starting point anyway — it is deterministic, cheap, and does not require a live scanner at all.
+
+The repository is still unusually well placed for this: it is a deliberately hostile scan target whose own stored-XSS payloads end up inside scanner output. Exposing that over MCP hosts a genuinely novel lesson.
 
 | Tool | Purpose |
 |---|---|
