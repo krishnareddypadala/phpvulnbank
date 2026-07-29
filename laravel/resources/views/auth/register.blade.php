@@ -26,7 +26,15 @@ async function doRegister(e) {
     if (MODE === 'xml') {
         // The legacy client built XML by string concatenation, so the fields
         // are injectable into the document itself. Preserved.
-        const xml = '<?xml version="1.0" encoding="UTF-8"?>'
+        //
+        // NOTE the split declaration below. Writing the XML declaration as one
+        // literal would put a bare left-angle-bracket-question-mark in this
+        // file, which Blade compiles into a PHP SHORT OPEN TAG -- a fatal
+        // syntax error on any host with short_open_tag=On, as the Debian
+        // php:8.3-apache image has. (This comment cannot spell it out either,
+        // for exactly the same reason.) A build concern, not a lesson: the XML
+        // sent to the server is byte-identical.
+        const xml = '<' + '?xml version="1.0" encoding="UTF-8"?' + '>'
             + '<root>'
             + '<name>' + v('name') + '</name>'
             + '<password>' + v('pwd') + '</password>'
