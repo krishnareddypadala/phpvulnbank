@@ -1,0 +1,13 @@
+# Keep host artefacts out of the image. vendor/ in particular is built inside
+# the container by `composer install`; copying a Windows-built tree in would
+# both bloat the image and risk platform-specific autoload paths.
+.git
+.env
+vendor
+node_modules
+storage/logs/*
+database/*.sqlite
+public/build
+public/images/*
+.phpunit.result.cache
+.phpunit.cache

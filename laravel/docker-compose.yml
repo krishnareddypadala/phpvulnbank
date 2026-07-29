@@ -1,0 +1,39 @@
+# PHPVulnBank (Laravel) -- intentionally vulnerable. See ../SECURITY.md.
+#
+# Every published port is bound to 127.0.0.1 EXPLICITLY. Docker's default
+# ("8090:80") binds to 0.0.0.0 and would expose two unauthenticated remote code
+# execution paths to the whole network. Do not remove the loopback prefixes.
+
+services:
+  app:
+    build: .
+    image: phpvulnbank-laravel:vulnerable-1.0
+    ports:
+      - "127.0.0.1:8090:80"
+    environment:
+      APP_ENV: local          # lab setting, intentional
+      APP_DEBUG: "true"       # VULN-23, intentional
+      APP_URL: http://127.0.0.1:8090
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: bankdb
+      DB_USERNAME: groot
+      DB_PASSWORD: bose123$$   # VULN-19, matches the legacy schema
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.4
+    ports:
+      - "127.0.0.1:3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bankdb
+      MYSQL_USER: groot
+      MYSQL_PASSWORD: bose123$$
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:
