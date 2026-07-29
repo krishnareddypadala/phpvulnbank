@@ -31,14 +31,40 @@
 <body>
 <header><h1>Welcome to PHP VULN BANK</h1></header>
 
+{{--
+    The navigation is rendered from session state: signed-out visitors see only
+    Login and Register.
+
+    IMPORTANT -- this is a UI change ONLY, and it does not close any lesson.
+    The endpoints behind these links are exactly as reachable as before; several
+    of them (VULN-11 account lookup, VULN-12 activate, KYC list and download,
+    the tools endpoints) still require no authentication at all.
+
+    If anything this makes VULN-12 sharper rather than weaker. Previously the
+    links were visible to everyone, so "the UI is not a control" was easy to
+    assume. Now the interface genuinely looks gated -- and the endpoints still
+    are not. A learner has to notice that hiding a link changed nothing, which
+    is the entire point of broken function-level access control.
+
+    Do not be tempted to add middleware to the routes to "match" this nav.
+--}}
 <nav>
-    <a href="/">Login</a> |
-    <a href="/profile">Profile</a> |
-    <a href="/transfer">Transfer</a> |
-    <a href="/feedback">Feedback</a> |
-    <a href="/kyc">KYC Upload</a> |
-    <a href="/admin">Admin</a> |
-    <a href="/lookup">Account Lookup</a>
+    @if (session()->has('uname'))
+        <a href="/profile">Profile</a> |
+        <a href="/transfer">Transfer</a> |
+        <a href="/feedback">Feedback</a> |
+        <a href="/kyc">KYC Upload</a> |
+        <a href="/lookup">Account Lookup</a> |
+        <a href="/admin">Admin</a> |
+        <a href="/docs">API Docs</a> |
+        <a href="#" onclick="navSignout(event)">Signout</a>
+        <span style="margin-left:12px;color:#666">signed in as {{ session('uname') }}</span>
+    @else
+        <a href="/">Login</a> |
+        <a href="/register/json">Register (JSON)</a> |
+        <a href="/register/xml">Register (XML)</a> |
+        <a href="/docs">API Docs</a>
+    @endif
 </nav>
 
 <main>
@@ -89,6 +115,12 @@ function render(html) {
 function renderText(text) {
     // The safe counterpart, used for endpoints that are not XSS lessons.
     document.getElementById('out').textContent = text;
+}
+
+async function navSignout(e) {
+    e.preventDefault();
+    await fetch('/api/v2/auth/logout', { method: 'POST' });
+    window.location = '/';
 }
 
 async function api(method, url, body, form) {

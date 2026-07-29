@@ -25,7 +25,7 @@ class ClientSmokeTest extends TestCase
     {
         return [
             ['/'], ['/profile'], ['/transfer'], ['/feedback'],
-            ['/admin'], ['/lookup'], ['/kyc'], ['/register/json'], ['/register/xml'],
+            ['/admin'], ['/lookup'], ['/kyc'], ['/register/json'], ['/register/xml'], ['/docs'],
         ];
     }
 

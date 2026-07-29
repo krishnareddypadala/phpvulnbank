@@ -24,6 +24,7 @@ Route::view('/feedback', 'feedback.index');
 Route::view('/admin', 'admin.index');
 Route::view('/lookup', 'account.lookup');
 Route::view('/kyc', 'kyc.upload');
+Route::view('/docs', 'docs');
 
 Route::get('/register/{mode}', fn (string $mode) => view('auth.register', [
     'mode' => in_array($mode, ['xml', 'json'], true) ? $mode : 'json',
