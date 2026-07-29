@@ -64,6 +64,18 @@ done
 # has to be specific about consequences rather than vaguely cautionary,
 # because "be careful" is not actionable and gets ignored.
 # -----------------------------------------------------------------------------
+# Hand the writable trees back to www-data.
+#
+# Every artisan command above runs as ROOT (the container's default user), and
+# the first one to log creates storage/logs/laravel.log owned root:root. Apache
+# workers run as www-data and then cannot append to it, so ANY request that
+# logs anything -- a warning, a handled exception -- dies with
+# "The stream or file ... could not be opened" and returns 500.
+#
+# That failure mode is nasty because it is invisible until something logs, and
+# the error it produces points at logging rather than at ownership.
+chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+
 CONTAINER_IPS="$(hostname -i 2>/dev/null || echo 'unknown')"
 
 cat <<BANNER
