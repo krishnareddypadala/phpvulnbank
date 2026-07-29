@@ -33,9 +33,25 @@ host that serves it. Treat a running instance as already compromised.
 
 ## Running it safely
 
-- **Bind to `127.0.0.1` only.** Never `php artisan serve --host=0.0.0.0`, never
-  a cloud VM with an open security group, never a shared or corporate network.
-  The provided `docker-compose.yml` binds to loopback explicitly.
+The app port is published on **all interfaces**, so the lab is reachable from
+other machines on your network. That is deliberate — a classroom lab that only
+answers on loopback is not much use.
+
+It also means the section above is not theoretical. **Reaching port 8090 is
+equivalent to shell access on the container.** Choose the network accordingly:
+
+| | |
+|---|---|
+| **OK** | An isolated lab VLAN, a classroom or workshop network, a home LAN you control |
+| **NEVER** | A public IP address |
+| **NEVER** | A cloud VM with an open security group |
+| **NEVER** | A corporate or shared office network |
+| **NEVER** | Behind a port-forwarded router |
+| **NEVER** | Through ngrok, Cloudflare Tunnel, or any similar service |
+
+The container prints this warning, and what an attacker gains, every time it
+starts. Bring it down when the session ends — `docker compose down`. MySQL stays
+bound to loopback and is not widened alongside the app.
 - **Use disposable data.** Never point it at a database containing anything
   real. `php artisan migrate:fresh --seed` rebuilds the entire lab from empty.
 - **Never expose port 80/8090 through a tunnel or reverse proxy**, including

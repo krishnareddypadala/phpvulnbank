@@ -56,9 +56,66 @@ until php artisan migrate:fresh --seed --force --no-interaction 2>/dev/null; do
     sleep 3
 done
 
-echo ""
-echo "  PHPVulnBank (Laravel) is up:  http://127.0.0.1:8090"
-echo "  INTENTIONALLY VULNERABLE -- localhost only. See SECURITY.md."
-echo ""
+# -----------------------------------------------------------------------------
+# Launch warning.
+#
+# The app port is published on all host interfaces so the lab is reachable
+# across a trusted LAN. That is deliberate -- and it means the warning below
+# has to be specific about consequences rather than vaguely cautionary,
+# because "be careful" is not actionable and gets ignored.
+# -----------------------------------------------------------------------------
+CONTAINER_IPS="$(hostname -i 2>/dev/null || echo 'unknown')"
+
+cat <<BANNER
+
+################################################################################
+#                                                                              #
+#   PHPVulnBank (Laravel)  --  INTENTIONALLY VULNERABLE TRAINING APPLICATION   #
+#                                                                              #
+################################################################################
+
+  Listening on port 8090 of EVERY interface on the Docker host.
+  Reachable from other machines on your network, by design.
+
+  Container address(es): ${CONTAINER_IPS}
+  Students connect to:   http://<THIS-HOST-LAN-IP>:8090
+  (run 'ip addr' or 'ipconfig' ON THE HOST to find that address --
+   the container cannot see it)
+
+  --------------------------------------------------------------------------
+  WHAT ANYONE WHO CAN REACH THIS PORT CAN DO
+  --------------------------------------------------------------------------
+
+    * Run arbitrary shell commands as www-data, WITHOUT LOGGING IN.
+      Two separate paths: the 'troy' backdoor on the login endpoint
+      (VULN-02) and an unauthenticated webshell (VULN-03).
+    * Upload a file that then executes as code (VULN-04).
+    * Read arbitrary files from this container (VULN-07).
+    * Make this host issue requests to your internal network (VULN-08).
+
+    In short: reaching this port is equivalent to shell access on this
+    container. Treat a running instance as already compromised.
+
+  --------------------------------------------------------------------------
+  WHERE THIS IS OK, AND WHERE IT IS NOT
+  --------------------------------------------------------------------------
+
+    OK      an isolated lab VLAN, a classroom or workshop network,
+            a home LAN you control
+
+    NEVER   a public IP address
+    NEVER   a cloud VM with an open security group
+    NEVER   a corporate or shared office network
+    NEVER   behind a port-forwarded router
+    NEVER   through ngrok, Cloudflare Tunnel or any similar service
+
+    Do not leave it running after the session. Bring it down with:
+        docker compose down
+
+  See SECURITY.md.
+
+################################################################################
+
+BANNER
 
 exec apache2-foreground

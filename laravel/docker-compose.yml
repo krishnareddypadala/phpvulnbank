@@ -1,19 +1,31 @@
 # PHPVulnBank (Laravel) -- intentionally vulnerable. See ../SECURITY.md.
 #
-# Every published port is bound to 127.0.0.1 EXPLICITLY. Docker's default
-# ("8090:80") binds to 0.0.0.0 and would expose two unauthenticated remote code
-# execution paths to the whole network. Do not remove the loopback prefixes.
+# The app port is published on ALL interfaces so the lab is reachable from
+# other machines on a trusted LAN -- a classroom, a lab segment, a workshop
+# network. That is a deliberate choice, not an oversight.
+#
+# UNDERSTAND WHAT IT MEANS. This application has two unauthenticated remote
+# code execution paths (VULN-02, VULN-03). Anyone who can route to this port
+# can run commands on the host that serves it, with no credentials. So:
+#
+#   OK      an isolated lab VLAN, a workshop network, a home LAN you control
+#   NEVER   a public IP, a cloud VM with an open security group, a corporate
+#           network, a port-forwarded router, or any tunnel (ngrok and friends)
+#
+# MySQL stays on loopback. Nothing outside the container needs it, and exposing
+# it hands out `groot`, which the schema grants ALL PRIVILEGES ON *.* (VULN-22).
 
 services:
   app:
     build: .
     image: phpvulnbank-laravel:vulnerable-1.0
     ports:
-      - "127.0.0.1:8090:80"
+      # All interfaces -- deliberate, see the header above.
+      - "8090:80"
     environment:
       APP_ENV: local          # lab setting, intentional
       APP_DEBUG: "true"       # VULN-23, intentional
-      APP_URL: http://127.0.0.1:8090
+      APP_URL: http://localhost:8090
       DB_CONNECTION: mysql
       DB_HOST: mysql
       DB_PORT: 3306
@@ -26,6 +38,7 @@ services:
   mysql:
     image: mysql:8.4
     ports:
+      # Loopback only -- deliberately NOT widened alongside the app port.
       - "127.0.0.1:3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root

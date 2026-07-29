@@ -47,8 +47,10 @@ jobs:
         run: semgrep --config=p/php --config=p/security-audit --json --output=ported.json --quiet laravel/app/ || true
 
       - name: Build the comparison
+        # tee, not plain redirect: the job summary renders nicely for humans,
+        # but only stdout is greppable from `gh run view --log`.
         run: |
-          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          python - <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
           import json, os
 
           def load(p):
