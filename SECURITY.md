@@ -33,9 +33,25 @@ host that serves it. Treat a running instance as already compromised.
 
 ## Running it safely
 
-- **Bind to `127.0.0.1` only.** Never `php artisan serve --host=0.0.0.0`, never
-  a cloud VM with an open security group, never a shared or corporate network.
-  The provided `docker-compose.yml` binds to loopback explicitly.
+The app port is published on **all interfaces**, so the lab is reachable from
+other machines on your network. That is deliberate — a classroom lab that only
+answers on loopback is not much use.
+
+It also means the section above is not theoretical. **Reaching port 8090 is
+equivalent to shell access on the container.** Choose the network accordingly:
+
+| | |
+|---|---|
+| **OK** | An isolated lab VLAN, a classroom or workshop network, a home LAN you control |
+| **NEVER** | A public IP address |
+| **NEVER** | A cloud VM with an open security group |
+| **NEVER** | A corporate or shared office network |
+| **NEVER** | Behind a port-forwarded router |
+| **NEVER** | Through ngrok, Cloudflare Tunnel, or any similar service |
+
+The container prints this warning, and what an attacker gains, every time it
+starts. Bring it down when the session ends — `docker compose down`. MySQL stays
+bound to loopback and is not widened alongside the app.
 - **Use disposable data.** Never point it at a database containing anything
   real. `php artisan migrate:fresh --seed` rebuilds the entire lab from empty.
 - **Never expose port 80/8090 through a tunnel or reverse proxy**, including
@@ -44,6 +60,31 @@ host that serves it. Treat a running instance as already compromised.
   tag name, and never tag it `latest`.
 - `APP_ENV=local` and `APP_DEBUG=true` are **lab settings**. They are
   intentional here (`VULN-23`) and must never be copied into a real project.
+
+## The MCP servers need isolation, not just localhost
+
+Two MCP servers ship with this lab (`phpvulnbank-api`, `phpvulnbank-db`). They
+change the threat model in a way the web app does not, and **"bind to
+localhost" does not address it** — the exposure is not network reachability, it
+is *client configuration*.
+
+MCP servers are normally registered in a developer's personal assistant client,
+alongside their real tools: filesystem, git, mail, ticketing. The stored
+prompt-injection payloads in this lab are written specifically to make a model
+take actions it was not asked to take, and they do not care which tools it has.
+Connect this server to a session that also holds real ones and the lab's data
+can reach them.
+
+- **Run it in a dedicated client profile with no other MCP servers connected.**
+- Both servers **fail closed**: they refuse to start unless `PHPVULNBANK_LAB=1`
+  is set deliberately.
+- Prefer **stdio** transport (`Mcp::local`), which is how they are registered.
+  Publishing them over HTTP would expose arbitrary SQL and a money-moving tool
+  on a network port.
+- `run_query` executes **model-composed SQL** on a connection that can drop
+  tables. Never point it at a database holding anything real.
+- **Assume every tool result reaches the model provider.** Seed data is
+  synthetic and must stay synthetic.
 
 ## Why Dependabot and scanners are noisy
 

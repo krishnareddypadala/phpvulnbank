@@ -1,0 +1,139 @@
+name: SAST
+
+# TEACHING MATERIAL -- deliberately NOT a gate.
+#
+# This app is supposed to be full of findings. Failing the build on them would
+# be meaningless. What IS meaningful is the comparison this workflow produces.
+#
+# Note on tooling: GitHub's own CodeQL does NOT support PHP, so the obvious
+# "free SAST" option is unavailable for this repository. Semgrep is used
+# instead -- it has PHP rules, runs without a token on open-source rulesets,
+# and emits SARIF for the Security tab.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  compare:
+    name: Legacy vs Laravel signal comparison
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Semgrep
+        run: pip install --quiet semgrep
+
+      # The two trees are scanned SEPARATELY and on purpose. src/ is the
+      # original flat PHP; laravel/app is the same behaviour behind a
+      # framework. Same lessons, same flaws, very different scanner output.
+      - name: Scan legacy src/
+        continue-on-error: true
+        run: semgrep --config=p/php --config=p/security-audit --json --output=legacy.json --quiet src/ || true
+
+      - name: Scan ported laravel/app
+        continue-on-error: true
+        run: semgrep --config=p/php --config=p/security-audit --json --output=ported.json --quiet laravel/app/ || true
+
+      - name: Build the comparison
+        # tee, not plain redirect: the job summary renders nicely for humans,
+        # but only stdout is greppable from `gh run view --log`.
+        run: |
+          python - <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          import json, os
+
+          def load(p):
+              try:
+                  with open(p) as f:
+                      return json.load(f).get("results", [])
+              except Exception:
+                  return []
+
+          legacy, ported = load("legacy.json"), load("ported.json")
+
+          def by_rule(rs):
+              out = {}
+              for r in rs:
+                  out[r.get("check_id", "?").split(".")[-1]] = out.get(r.get("check_id", "?").split(".")[-1], 0) + 1
+              return out
+
+          print("## SAST: what framework adoption does to the signal\n")
+          print(f"- **Legacy `src/` (flat PHP):** {len(legacy)} findings")
+          print(f"- **Ported `laravel/app/`:** {len(ported)} findings")
+          print("")
+          print("Both trees implement the **same 28 documented vulnerabilities**.")
+          print("`docs/vulnerabilities.md` is the ground truth; this is what a scanner sees.\n")
+          print("### Why the numbers differ\n")
+          print("Semgrep recognises Eloquent and Blade as safe, so interpolated SQL that")
+          print("lights up across a dozen `mysqli_query()` calls collapses to whatever")
+          print("`App\\Support\\LegacyQuery` exposes. The vulnerability count did not change.")
+          print("The **detectability** did.\n")
+          print("That gap -- between what is exploitable and what is reported -- is the")
+          print("lesson. Compare either number against the 28 in the catalogue.\n")
+
+          def table(title, d):
+              print(f"### {title}\n")
+              if not d:
+                  print("_No findings._\n"); return
+              print("| Rule | Count |\n|---|---|")
+              for k, v in sorted(d.items(), key=lambda kv: -kv[1])[:15]:
+                  print(f"| `{k}` | {v} |")
+              print("")
+
+          table("Legacy findings by rule", by_rule(legacy))
+          table("Ported findings by rule", by_rule(ported))
+          PY
+
+      - name: SARIF for the Security tab
+        continue-on-error: true
+        run: semgrep --config=p/php --config=p/security-audit --sarif --output=semgrep.sarif --quiet laravel/app/ src/ || true
+
+      - name: Upload SARIF
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
+
+  dependencies:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      # Reports, never gates. When the planned A06 lesson lands (a dependency
+      # pinned to a version with a published advisory), this step is EXPECTED
+      # to report it -- and shipping anyway is itself the lesson, because that
+      # is what most organisations do with the finding.
+      - name: composer audit
+        working-directory: laravel
+        continue-on-error: true
+        run: |
+          composer install --no-interaction --prefer-dist --no-progress
+          composer audit --format=plain | tee audit.txt || true
+          {
+            echo "## Dependency audit"
+            echo ""
+            echo '```'
+            cat audit.txt
+            echo '```'
+            echo ""
+            echo "_Reported, not gated. See docs/proposed-lessons.md VULN-41._"
+          } >> "$GITHUB_STEP_SUMMARY"

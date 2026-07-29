@@ -1,0 +1,68 @@
+name: Tests
+
+# THE REAL GATE.
+#
+# This suite is inverted from the usual direction: most of it asserts that
+# vulnerabilities STILL WORK. A failure here does not mean the app is broken --
+# it means a lesson has been silently repaired by a framework upgrade, a
+# linter, a dependency bump, or a well-meaning contributor.
+#
+# That silent-fix scenario is the number one risk to this project, so this is
+# the check that should block a merge. SAST and DAST (see sast.yml, dast.yml)
+# are teaching material, not gates.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exploitability:
+    name: Exploitability regression suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, dom, fileinfo, pdo_sqlite, sqlite3, zip, curl, intl
+          coverage: none
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: laravel/vendor
+          key: composer-${{ hashFiles('laravel/composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install dependencies
+        working-directory: laravel
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare environment
+        working-directory: laravel
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Run the suite
+        working-directory: laravel
+        run: php artisan test
+
+      - name: Explain a failure
+        if: failure()
+        run: |
+          echo "### A lesson may have been silently repaired" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Most of this suite asserts that vulnerabilities **still work**." >> "$GITHUB_STEP_SUMMARY"
+          echo "If an exploitability test failed, find what closed the lesson and" >> "$GITHUB_STEP_SUMMARY"
+          echo "restore the deliberate opt-out. Do not \"fix\" the test." >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "See \`docs/vulnerabilities.md\`." >> "$GITHUB_STEP_SUMMARY"

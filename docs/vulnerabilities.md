@@ -20,8 +20,36 @@ Base URL below is the app root; the API lives under `/api/v2`.
 | Implemented | Designed, not yet built |
 |---|---|
 | VULN-01 … 25 (legacy port), 35, 66, 67 | VULN-26 … 51 ([`proposed-lessons.md`](proposed-lessons.md)) |
-| | VULN-52 … 65 ([`proposed-lessons-jwt.md`](proposed-lessons-jwt.md)) |
-| | VULN-72 … 92 ([`mcp-design.md`](mcp-design.md)) |
+| VULN-46, 47 (audit log) | VULN-52 … 65 ([`proposed-lessons-jwt.md`](proposed-lessons-jwt.md)) |
+| VULN-73, 75, 77, 81, 82, 87, 88, 90, 91, 92 (MCP) | VULN-72, 74, 76, 78 … 80, 83 … 86, 89 |
+
+### MCP layer
+
+Two servers, registered in `laravel/routes/ai.php` and both failing closed
+without `PHPVULNBANK_LAB=1` (see `App\Support\McpGuard`).
+
+| Lesson | Where |
+|---|---|
+| `VULN-75` **Tool poisoning** — the `#[Description]` on `AccountSummaryTool` carries instructions the model reads as trusted guidance and the user never sees. Tool metadata is executable context. | `app/Mcp/Tools/AccountSummaryTool.php` |
+| `VULN-77` **Stored prompt injection** — the same `feedback` column as VULN-13. Same sink, same chain, different interpreter. | `ListFeedbackTool` |
+| `VULN-81` **Confused deputy** — no per-user identity, so the *server's* authority is applied to the *user's* request. This is why VULN-82 cannot be fixed inside the tools. | `ApiServer` |
+| `VULN-82` **No object-level authorisation** | `GetBalanceTool` |
+| `VULN-90` **Unrestricted text-to-SQL** — moots the whole injection curriculum; the surface moved from the parameter to the prompt. | `Db\RunQueryTool` |
+| `VULN-91` **Over-privileged connection** — "read-only" is a description, not a control. Runs on `groot` (VULN-22). | `Db\RunQueryTool` |
+| `VULN-87` **Unmasked PII** — masking in the presentation layer is not masking, and here the data crosses an organisational boundary. | `Db\GetCustomerTool` |
+| `VULN-88` **Masking bypassed on the error path** — the success path redacts; the failure path does not. | `Db\GetCustomerMaskedTool` |
+| `VULN-73` **Secrets in error output** — raw DB exceptions returned to the model. | `Db\RunQueryTool` |
+| `VULN-92` **Application controls bypassed** — diff `audit_logs` after the same action through each server. | `DbServer` |
+| `VULN-46/47` **Inadequate logging, log injection** — records money movement and nothing else; no IP or user agent. | `AuditLog`, migration |
+
+**Guarded twins** (the input/output control lesson): `ListFeedbackSanitisedTool`,
+`RunQuerySafeTool`, `GetCustomerMaskedTool`, `RunTransferConfirmedTool`.
+
+> Output sanitisation **reduces** prompt injection; it does not eliminate it.
+> There is no escaping scheme for natural language the way `htmlspecialchars()`
+> works for HTML, because the interpreter has no grammar separating data from
+> instruction. The control that actually bounds the damage is human-in-the-loop
+> confirmation — `RunTransferConfirmedTool` cannot move money by design.
 
 ---
 
