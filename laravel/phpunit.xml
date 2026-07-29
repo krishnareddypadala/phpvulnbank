@@ -23,9 +23,28 @@
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value=":memory:"/>
-        <env name="DB_URL" value=""/>
+        <!--
+            force="true" IS LOAD-BEARING. Do not remove it.
+
+            Without it, PHPUnit leaves an existing real environment variable
+            alone. So in any environment where the DB_ variables are actually
+            exported (the docker-compose container sets DB_CONNECTION=mysql),
+            the suite runs RefreshDatabase against the LIVE database and drops
+            every table in it.
+
+            That is exactly what happened on the lab VM. Running
+            `php artisan test` inside the deployed container wiped the seeded
+            bank data, and still reported 64 passing tests, because from the
+            suite's point of view nothing had gone wrong.
+
+            TestIsolationTest asserts this stays fixed.
+        -->
+        <env name="DB_CONNECTION" value="sqlite" force="true"/>
+        <env name="DB_DATABASE" value=":memory:" force="true"/>
+        <env name="DB_URL" value="" force="true"/>
+        <env name="DB_HOST" value="" force="true"/>
+        <env name="DB_USERNAME" value="" force="true"/>
+        <env name="DB_PASSWORD" value="" force="true"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
