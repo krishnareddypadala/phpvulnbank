@@ -1,0 +1,54 @@
+# PHPVulnBank (Laravel) -- SINGLE-CONTAINER variant.
+#
+# Apache + PHP + MariaDB in one image, so the lab starts with one command:
+#
+#     docker run -it -p 8090:80 <image>
+#
+# This exists for parity with the legacy image, which bundled everything and is
+# what the README's published tags do. The compose setup (Dockerfile +
+# docker-compose.yml) remains the primary path and keeps the database in its own
+# service, which is the better architecture.
+#
+# Running two services in one container is not best practice. It is a
+# deliberate convenience for a disposable training lab, not a pattern to copy.
+#
+# Pinned by minor version. NEVER use `latest`, and never push without
+# `vulnerable` in the tag name. See ../SECURITY.md.
+FROM php:8.3-apache
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libzip-dev libpng-dev libicu-dev libxml2-dev unzip git \
+        mariadb-server mariadb-client \
+    && docker-php-ext-install pdo_mysql zip gd intl dom \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Document root is public/ -- the correct configuration. Pointing it at the
+# project root instead is VULN-37 and is deliberately NOT enabled here.
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
+        /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf \
+    && a2enmod rewrite
+
+WORKDIR /var/www/html
+COPY . /var/www/html
+
+RUN composer install --no-interaction --prefer-dist --no-progress \
+    && chown -R www-data:www-data /var/www/html
+
+# VULN-04 depends on PHP being EXECUTED in the uploads directory, which is the
+# default under mod_php. That is what makes an uploaded .php file a webshell.
+RUN mkdir -p public/images && chown -R www-data:www-data public/images
+
+# The MCP guard requires this to be set deliberately. Baking it into the
+# single-container image is the operator's opt-in by way of choosing to run it.
+ENV PHPVULNBANK_LAB=1
+
+COPY docker-entrypoint-bundled.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint-bundled.sh
+
+VOLUME /var/lib/mysql
+
+EXPOSE 80
+CMD ["/usr/local/bin/docker-entrypoint-bundled.sh"]
