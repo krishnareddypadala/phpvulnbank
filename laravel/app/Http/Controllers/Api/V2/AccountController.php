@@ -49,7 +49,8 @@ class AccountController extends Controller
             'mobile' => $row->mobile,
             'balance' => $row->balance,
             // [VULN-13: Stored XSS] Intentional. Returned raw. The browser
-            // client renders this field with innerHTML (see resources/js),
+            // client renders this field with innerHTML (see the render() helper
+            // in resources/views/layouts/app.blade.php),
             // so a payload stored through the feedback endpoint executes in
             // whoever views the profile. The fix is to render with
             // textContent, or escape here.

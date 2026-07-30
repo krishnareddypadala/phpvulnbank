@@ -261,9 +261,11 @@ Two of these redirects also point at **`login.html`, which does not exist** (`tr
 
 The display loop is `for($i=1; $i<$num; $i++)`, so the first row is never rendered. This looks like an ordinary bug rather than a lesson. **Recommendation:** fix it in the port and note the change, since a hidden first row makes the stored-XSS lesson (VULN-13) unreliable to demonstrate — whether the payload fires depends on where the attacker's row happens to sort.
 
-### 7.5 The CSRF PoC is stale
+### 7.5 The CSRF PoC is stale — RESOLVED, July 2026
 
-`payload/csrf/offer.html` posts `bacno` and `tamount` to `http://krishnarp.guru/transfer.php`. The parameter `transfer.php` actually reads is **`tacno`**, so the PoC would not work even against the live legacy app, and the domain is not the local lab. It needs both the parameter name and the target URL corrected during the port. Confirm the intended target is the local instance.
+`payload/csrf/offer.html` posted `bacno` and `tamount` to `http://krishnarp.guru/transfer.php`. The parameter the endpoint actually reads is **`tacno`**, so the PoC never worked even against the legacy app — the request arrived, was accepted, and transferred nothing. Silent success, which is the same failure shape as the lesson it demonstrates. The domain was also not the lab.
+
+**Fixed.** It now posts `tacno` to `/api/v2/transfers` with a configurable `TARGET`, and documents why the attack works: session-cookie auth, no `VerifyCsrfToken` on the api group, and form-encoded acceptance — all three required, since a JSON-only API is not CSRF-able.
 
 ### 7.6 Is the XXE lesson still alive?
 
