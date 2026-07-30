@@ -35,6 +35,7 @@ set_env DB_PORT "${DB_PORT}"
 set_env DB_DATABASE "${DB_DATABASE}"
 set_env DB_USERNAME "${DB_USERNAME}"
 set_env DB_PASSWORD "${DB_PASSWORD}"
+set_env PHPVULNBANK_LAB "${PHPVULNBANK_LAB}"
 
 # APP_KEY is generated at container start and never committed. The deliberately
 # exposed-.env lesson (VULN-37) is a RUNTIME exposure via the vhost, not a

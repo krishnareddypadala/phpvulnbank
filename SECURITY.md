@@ -76,11 +76,25 @@ Connect this server to a session that also holds real ones and the lab's data
 can reach them.
 
 - **Run it in a dedicated client profile with no other MCP servers connected.**
+  This is the requirement that matters, and it is unaffected by transport.
 - Both servers **fail closed**: they refuse to start unless `PHPVULNBANK_LAB=1`
-  is set deliberately.
-- Prefer **stdio** transport (`Mcp::local`), which is how they are registered.
-  Publishing them over HTTP would expose arbitrary SQL and a money-moving tool
-  on a network port.
+  is set deliberately. The guard lives in `Server::start()`, which both
+  transports call.
+- Both are registered on **both transports**:
+  - **stdio** (`Mcp::local`) — for a student running the whole lab locally.
+    Isolated, and how MCP is normally deployed.
+  - **HTTP** (`POST /mcp/api`, `POST /mcp/db`) — so a shared classroom instance
+    is usable at all. A student's client cannot launch a stdio subprocess on
+    someone else's machine, so without this the MCP exercises could not be run
+    against a central lab.
+- The HTTP endpoints are **unauthenticated** (`VULN-80`). Note this adds little
+  on top of what is already published on the same port: `tools/exec` is an
+  unauthenticated webshell, so the host is already fully compromisable by
+  anyone who can reach it.
+- On a **shared** instance, remember `run_query` accepts free-form SQL on a
+  connection that can drop tables — one student can take the lab down for the
+  class. Rebuild it with:
+  `docker compose exec app php artisan migrate:fresh --seed --force`
 - `run_query` executes **model-composed SQL** on a connection that can drop
   tables. Never point it at a database holding anything real.
 - **Assume every tool result reaches the model provider.** Seed data is
