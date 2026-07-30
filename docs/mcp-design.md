@@ -289,7 +289,26 @@ Requirements:
 
 1. **A dedicated client profile with no other MCP servers connected.** State this in `SECURITY.md`, in the server's own startup banner, and in every tool description.
 2. **Refuse to start without an explicit lab marker** — an environment variable the operator must set deliberately. Fail closed.
-3. **Prefer stdio transport** over HTTP/SSE for everything except the shadow-server exercise, which needs a network-reachable endpoint by definition. Scope that exercise to an isolated compose network.
+3. ~~**Prefer stdio transport** over HTTP/SSE for everything except the shadow-server exercise.~~
+   **Revised, July 2026 — both transports are now registered.** The original
+   reasoning was inconsistent: it objected to publishing arbitrary SQL and a
+   money-moving tool on a network port, while the same application already
+   publishes an unauthenticated webshell (`VULN-03`) and an RCE backdoor
+   (`VULN-02`) on that port. `tools/exec` is strictly more dangerous than
+   `run_query`, so HTTP transport does not meaningfully change the exposure of a
+   host that is already fully compromisable by anyone who can reach it.
+   <br><br>
+   It was also self-defeating. stdio requires the client to launch the server as
+   a child process, so a student's client cannot reach a shared lab VM at all —
+   which meant the entire MCP curriculum was unusable against a central
+   instance, the way these labs are actually run.
+   <br><br>
+   The HTTP endpoints (`POST /mcp/api`, `POST /mcp/db`) are unauthenticated and
+   catalogued as `VULN-80`. The requirement that genuinely matters is unchanged
+   and is item 1 above: **an isolated client profile**. A student connecting
+   their personal assistant — the one holding their filesystem, git and mail
+   tools — is exposed identically whether the server is local or remote. That is
+   client configuration, not transport.
 4. **Never point either server at a database containing real data.** `mcp-db` executes model-composed SQL on a connection that can drop tables.
 5. **Assume every tool result reaches the model provider.** Seed data must be synthetic, and `VULN-87` must not be demonstrated with anything resembling a real card number.
 

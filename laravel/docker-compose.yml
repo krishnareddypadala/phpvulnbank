@@ -25,6 +25,10 @@ services:
     environment:
       APP_ENV: local          # lab setting, intentional
       APP_DEBUG: "true"       # VULN-23, intentional
+      # Deliberate opt-in required by App\Support\McpGuard. Running this
+      # compose file IS the operator consenting to a vulnerable MCP server;
+      # without it both servers refuse to start on either transport.
+      PHPVULNBANK_LAB: "1"
       APP_URL: http://localhost:8090
       DB_CONNECTION: mysql
       DB_HOST: mysql

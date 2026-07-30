@@ -40,6 +40,7 @@ without `PHPVULNBANK_LAB=1` (see `App\Support\McpGuard`).
 | `VULN-88` **Masking bypassed on the error path** — the success path redacts; the failure path does not. | `Db\GetCustomerMaskedTool` |
 | `VULN-73` **Secrets in error output** — raw DB exceptions returned to the model. | `Db\RunQueryTool` |
 | `VULN-92` **Application controls bypassed** — diff `audit_logs` after the same action through each server. | `DbServer` |
+| `VULN-80` **Unauthenticated MCP endpoint** — `POST /mcp/api` and `POST /mcp/db` serve the full tool set, including free-form SQL and the ungated admin actions, to any caller who can reach the port. Fix: `->middleware(['auth:sanctum'])` plus per-user token pass-through, which would also make `VULN-81` fixable rather than structural. | `routes/ai.php` |
 | `VULN-46/47` **Inadequate logging, log injection** — records money movement and nothing else; no IP or user agent. | `AuditLog`, migration |
 
 **Guarded twins** (the input/output control lesson): `ListFeedbackSanitisedTool`,
