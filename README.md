@@ -38,7 +38,7 @@ dump-based workflow.
 
 | | |
 |---|---|
-| `src/` | The **original** flat-PHP application. Do not delete: the `SAST` workflow scans it and `laravel/app/` separately on every push, and reports the difference. Same 28 vulnerabilities, far fewer findings — because Semgrep recognises Eloquent and Blade as safe. That contrast is the point. |
+| tag `legacy-flat-php` | The **original** flat-PHP application. Removed from the working tree; retrievable with `git checkout legacy-flat-php`. The `SAST` workflow materialises it from this tag to compare scanner output against the port — same 28 vulnerabilities, far fewer findings, because Semgrep recognises Eloquent and Blade as safe. **Do not delete the tag**; it is the only named reference to the pre-port code. |
 | `laravel/` | The **current** application: a Laravel 13 port with the same vulnerabilities, an API-first design, and a deliberately vulnerable MCP layer. |
 
 Full catalogue of what is intentional: [`docs/vulnerabilities.md`](docs/vulnerabilities.md).

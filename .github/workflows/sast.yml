@@ -27,6 +27,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history and tags: the legacy tree is materialised from the
+          # `legacy-flat-php` tag below, not from the working tree.
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -35,12 +39,33 @@ jobs:
       - name: Install Semgrep
         run: pip install --quiet semgrep
 
-      # The two trees are scanned SEPARATELY and on purpose. src/ is the
-      # original flat PHP; laravel/app is the same behaviour behind a
-      # framework. Same lessons, same flaws, very different scanner output.
-      - name: Scan legacy src/
+      # src/ was removed from the working tree in July 2026. The comparison it
+      # feeds is worth keeping, so the legacy code is checked out from the
+      # `legacy-flat-php` tag into a scratch directory instead.
+      #
+      # If this step fails, the tag has been deleted. It is the only remaining
+      # reference to the pre-port application outside raw git history.
+      - name: Materialise the legacy tree from the tag
+        id: legacy
         continue-on-error: true
-        run: semgrep --config=p/php --config=p/security-audit --json --output=legacy.json --quiet src/ || true
+        run: |
+          mkdir -p legacy-tree
+          if git rev-parse -q --verify refs/tags/legacy-flat-php >/dev/null; then
+            git archive legacy-flat-php src | tar -x -C legacy-tree
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo "Legacy tree: $(find legacy-tree -name '*.php' | wc -l) PHP files"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::tag legacy-flat-php not found — skipping the legacy half of the comparison"
+          fi
+
+      # The two trees are scanned SEPARATELY and on purpose. The legacy tree is
+      # the original flat PHP; laravel/app is the same behaviour behind a
+      # framework. Same lessons, same flaws, very different scanner output.
+      - name: Scan legacy tree
+        if: steps.legacy.outputs.available == 'true'
+        continue-on-error: true
+        run: semgrep --config=p/php --config=p/security-audit --json --output=legacy.json --quiet legacy-tree/ || true
 
       - name: Scan ported laravel/app
         continue-on-error: true
@@ -69,7 +94,7 @@ jobs:
               return out
 
           print("## SAST: what framework adoption does to the signal\n")
-          print(f"- **Legacy `src/` (flat PHP):** {len(legacy)} findings")
+          print(f"- **Legacy flat PHP** (from tag `legacy-flat-php`): {len(legacy)} findings")
           print(f"- **Ported `laravel/app/`:** {len(ported)} findings")
           print("")
           print("Both trees implement the **same 28 documented vulnerabilities**.")
@@ -97,7 +122,7 @@ jobs:
 
       - name: SARIF for the Security tab
         continue-on-error: true
-        run: semgrep --config=p/php --config=p/security-audit --sarif --output=semgrep.sarif --quiet laravel/app/ src/ || true
+        run: semgrep --config=p/php --config=p/security-audit --sarif --output=semgrep.sarif --quiet laravel/app/ || true
 
       - name: Upload SARIF
         continue-on-error: true
