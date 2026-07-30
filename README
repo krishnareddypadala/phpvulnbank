@@ -27,12 +27,66 @@ To get started with PHPVulnBank, follow these steps:
 
 4. Access the PHPVulnBank application through your web browser.
 
-## phpvulnbank on docker
+## Two versions live in this repository
 
-Go to command prompt and run below command.
-docker run -it -p 8090:80 -p 22:22  krishnapadala55/phpvulnbank:25.04
+| | |
+|---|---|
+| `src/` | The **original** flat-PHP application. Kept for reference and for before/after scanner comparison. |
+| `laravel/` | The **current** application: a Laravel 13 port with the same vulnerabilities, an API-first design, and a deliberately vulnerable MCP layer. |
+
+Full catalogue of what is intentional: [`docs/vulnerabilities.md`](docs/vulnerabilities.md).
+Read [`SECURITY.md`](SECURITY.md) before running either.
+
+## Running the Laravel version on Docker
+
+**Single container** (Apache + PHP + MariaDB together — one command, nothing else needed):
+
+```
+docker build -f laravel/Dockerfile.bundled -t phpvulnbank-laravel:bundled-vulnerable-1.0 laravel/
+docker run -it -p 8090:80 phpvulnbank-laravel:bundled-vulnerable-1.0
+```
+
+**Compose** (database in its own service — the better architecture, and the primary path):
+
+```
+cd laravel && docker compose up -d
+```
+
+Then open **http://localhost:8090**.
+
+| | |
+|---|---|
+| Web app | `/` |
+| API docs (Swagger UI) | `/docs` |
+| OpenAPI spec | `/api/v2/openapi.json` |
+| MCP over HTTP | `POST /mcp/api`, `POST /mcp/db` |
+| MCP over stdio | `php artisan mcp:start phpvulnbank-api` |
+
+Logins: `krishna` / `happy123$` (user), `admin` / `krishna1$` (administrator).
+
+Rebuild the lab data at any time — including after a student drops the database
+through the intentionally unrestricted SQL tool:
+
+```
+docker compose exec app php artisan migrate:fresh --seed --force
+```
+
+### Running the legacy version
+
+```
+docker run -it -p 8090:80 -p 22:22 krishnapadala55/phpvulnbank:25.04
+```
 
 [![PHPVulnBank Demo](docker_phpvulnbank.gif)](https://github.com/krishnareddypadala/phpvulnbank/blob/master/Media/docker_phpvulnbank.gif)
+
+## Where it is safe to run this
+
+This application contains **unauthenticated remote code execution**. Reaching its
+port is equivalent to shell access on the container.
+
+Fine on an isolated lab VLAN, a classroom network, or a LAN you control. **Never**
+on a public IP, a cloud VM with an open security group, a corporate network, a
+port-forwarded router, or through a tunnelling service. See [`SECURITY.md`](SECURITY.md).
 
 
 ## Contributing
