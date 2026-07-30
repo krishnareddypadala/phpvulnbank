@@ -23,7 +23,7 @@ Five things that materially change the migration plan. Details in the sections r
 
 ## 2. Database schema
 
-`dbscript/banktable.sql` creates one database (`bankdb`), one user (`groot` / `bose123$`, granted `ALL PRIVILEGES ON *.*` — itself a lesson), and one table.
+`dbscript/banktable.sql` created one database (`bankdb`), one user (`groot` / `bose123$`, granted `ALL PRIVILEGES ON *.*` — itself a lesson), and one table. The file was deleted once the migration superseded it; its DDL is preserved in §2.1 below.
 
 | # | Column | Type | Notes |
 |---|---|---|---|
@@ -49,6 +49,45 @@ Seed data:
 | 4 | `srikanth` | `test123$` | 1020 | 0 | 0 |
 
 `srikanth` is inactive on purpose — he is the subject of the account-activation flow.
+
+### 2.1 Original DDL, preserved
+
+`dbscript/banktable.sql` was deleted in July 2026 once the Laravel migration
+superseded it. It is reproduced here because the column ORDER below is what
+every published SQL injection payload for this lab depends on, and that
+provenance is worth keeping after the file itself is gone.
+
+```sql
+CREATE USER 'groot'@'%' IDENTIFIED BY 'bose123$';
+GRANT ALL PRIVILEGES ON *.* TO 'groot'@'%' WITH GRANT OPTION;
+
+CREATE DATABASE bankdb;
+USE bankdb;
+CREATE TABLE `banktable` (
+  `acno` int(11) NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `balance` int(11) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `mobile` varchar(14) NOT NULL,
+  `feedback` varchar(1000) NOT NULL,
+  `active` TINYINT NULL DEFAULT 0,
+  `admin` TINYINT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO `banktable` (`acno`,`username`,`password`,`balance`,`email`,`mobile`,`feedback`,`active`,`admin`) VALUES
+(1,'krishna',md5('happy123$'),2840,'test@test.com','9876543210','krishnarp','1','0'),
+(2,'admin',md5('krishna1$'),4528,'admin@test.com','9876543201','hello','1','1'),
+(3,'murali',md5('happy1$'),1030,'tes@test.com','8765432190','hello','1','0'),
+(4,'srikanth',md5('test123$'),1020,'test@test.com','7654321098','hello','0','0');
+
+ALTER TABLE `banktable` ADD PRIMARY KEY (`acno`);
+ALTER TABLE `banktable` MODIFY `acno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+```
+
+The `GRANT ALL PRIVILEGES ON *.*` on line 2 is `VULN-22`, and it is also what
+the direct-database MCP lesson (`VULN-91`, "read-only is a lie") depends on —
+the bundled container's entrypoint reproduces it deliberately.
 
 > **Discrepancy:** `src/ui/footer2.php` advertises krishna's password as `happay123$`. The seed data is `happy123$`. The documented credential is wrong and has presumably been confusing users. Fix in the port.
 
@@ -177,7 +216,7 @@ These port straight across with no deliberate opt-outs.
 | `src/ui/footer2.php` | → layout footer **with the demo-credentials block** (VULN-20 — keep it, fix the typo) |
 | `src/ui/header copy.php` | **Dead.** Orphaned, never included, references a `css.css` that does not exist. Do not port |
 | `src/images/img.jpg` | Sample KYC document. Keep as a seeded fixture |
-| `Media/docker_phpvulnbank.gif` | Unchanged |
+| `Media/docker_phpvulnbank.gif` | **Deleted** July 2026 — 8.6 MB screen recording of the legacy app, superseded and no longer representative |
 | `DAST_PenTest_Run_by_Claude by Anthropic.pdf` | Unchanged. Note the filename contains spaces |
 
 ---
@@ -279,10 +318,11 @@ Flagging explicitly for the guardrails discussion, not as a question about wheth
 
 ## 8. Infrastructure notes for Phase 6
 
-- **`Dockerfile`** — based on `ubuntu:24.04` (already pinned, good). Installs Apache + PHP + MySQL + **openssh-server** in one image and exposes port 22. The README instructs `docker run -it -p 8090:80 -p 22:22`, which publishes SSH on the host. Per the plan's §9, decide whether SSH is a lesson or a convenience; it currently reads as convenience and should probably go.
-- **`dock/dock.sh`** — the container entrypoint **prompts interactively** (`read ch`) for SSH account creation, so the container only starts under `-it`. Any CI that runs it non-interactively will hang. This must change for a docker-compose workflow.
-- MySQL is bootstrapped with `mysql -u root` and no password; the SQL script grants `groot` `ALL PRIVILEGES ON *.*` (VULN-22).
-- **Image tag mismatch** — the README says `krishnapadala55/phpvulnbank:25.04` while the Dockerfile base is `ubuntu:24.04`. Harmless but confusing; align them.
+- **The legacy build scaffolding has been removed** (July 2026): the root `Dockerfile`, `dock/dock.sh` and `dbscript/`. The pre-built images on Docker Hub are self-contained and still run, so nothing needed rebuilding from source. The analysis is kept below because it explains decisions the Laravel container inherited.
+  - The old `Dockerfile` was based on `ubuntu:24.04` and installed Apache + PHP + MySQL + **openssh-server** in one image, exposing port 22. SSH read as convenience rather than a lesson and did not carry over.
+  - `dock/dock.sh` **prompted interactively** (`read ch`) for SSH account creation, so the container only started under `-it` and would hang in any non-interactive CI. It is also the reason `.gitattributes` now pins `*.sh text eol=lf` — checked out with CRLF it failed with "bad interpreter".
+  - MySQL was bootstrapped with `mysql -u root` and no password, and the SQL script granted `groot` `ALL PRIVILEGES ON *.*` (VULN-22). The Laravel bundled container reproduces that grant deliberately — `VULN-91` depends on it.
+- **`src/` is deliberately retained.** It has a live consumer: `.github/workflows/sast.yml` scans it alongside `laravel/app/` to produce the signal-comparison described at the end of this section. Deleting it would silence that lesson.
 - **All legacy CI has been removed** (July 2026). For the record, since the analysis informed the port and the archived DAST report still refers to it:
   - `DevSecOpS/DAST_Scan_Zap.ps1` targeted `http://127.0.0.1:8090/phpvulnbank/`, but `dock.sh` printed `http://localhost:8090/login.php` — the scan path looked wrong for the container layout and would have found nothing at that URL. Treat the archived DAST results with that in mind.
   - `DevSecOpS/fortifyscan.ps` was a duplicate of `fortifyscan.ps1` left behind by a rename (commit `b523854`).

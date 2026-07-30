@@ -14,24 +14,31 @@ The primary objective of PHPVulnBank is to educate developers and security engin
 
 ## Getting Started
 
-To get started with PHPVulnBank, follow these steps:
+Fastest path — pull the published image and run it:
 
-1. Clone the GitHub repository:
-   ```
-   git clone https://github.com/krishnareddypadala/phpvulnbank.git
-   ```
+```
+docker run -it -p 8090:80 krishnapadala55/phpvulnbank:laravel-bundled-vulnerable-1.0
+```
 
-2. Set up a web server (e.g., Apache) and configure it to serve the PHPVulnBank directory.
+Or build from source:
 
-3. Import the provided `banktable.sql` file into your MySQL database. 
+```
+git clone https://github.com/krishnareddypadala/phpvulnbank.git
+cd phpvulnbank/laravel && docker compose up -d
+```
 
-4. Access the PHPVulnBank application through your web browser.
+Then open **http://localhost:8090** and log in as `krishna` / `happy123$`.
+
+The old manual setup (configure Apache by hand, import a `.sql` dump) is gone —
+`php artisan migrate:fresh --seed` rebuilds the entire lab from an empty
+database, which is the single biggest thing the Laravel port bought over the
+dump-based workflow.
 
 ## Two versions live in this repository
 
 | | |
 |---|---|
-| `src/` | The **original** flat-PHP application. Kept for reference and for before/after scanner comparison. |
+| `src/` | The **original** flat-PHP application. Do not delete: the `SAST` workflow scans it and `laravel/app/` separately on every push, and reports the difference. Same 28 vulnerabilities, far fewer findings — because Semgrep recognises Eloquent and Blade as safe. That contrast is the point. |
 | `laravel/` | The **current** application: a Laravel 13 port with the same vulnerabilities, an API-first design, and a deliberately vulnerable MCP layer. |
 
 Full catalogue of what is intentional: [`docs/vulnerabilities.md`](docs/vulnerabilities.md).
@@ -73,11 +80,16 @@ docker compose exec app php artisan migrate:fresh --seed --force
 
 ### Running the legacy version
 
+The pre-built images remain on Docker Hub and still work:
+
 ```
 docker run -it -p 8090:80 -p 22:22 krishnapadala55/phpvulnbank:25.04
 ```
 
-[![PHPVulnBank Demo](docker_phpvulnbank.gif)](https://github.com/krishnareddypadala/phpvulnbank/blob/master/Media/docker_phpvulnbank.gif)
+Its build scaffolding (`Dockerfile`, `dock/`, `dbscript/`) was removed from this
+repository in July 2026 — the published tags are self-contained, so nothing
+needs rebuilding from source. The legacy application code itself stays in
+`src/`, because CI scans it (see below).
 
 ## Where it is safe to run this
 
