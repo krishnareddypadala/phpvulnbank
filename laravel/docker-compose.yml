@@ -19,6 +19,13 @@ services:
   app:
     build: .
     image: phpvulnbank-laravel:vulnerable-1.0
+    # Survive a host reboot -- but still stop on an explicit `docker compose
+    # down`, so tearing the lab down after a session actually keeps it down.
+    #
+    # Note: the entrypoint runs `migrate:fresh --seed` on every start, so a
+    # reboot reseeds to the 4 demo accounts and discards anything students
+    # created. For a disposable training lab that is the intended behaviour.
+    restart: unless-stopped
     ports:
       # All interfaces -- deliberate, see the header above.
       - "8090:80"
@@ -41,6 +48,7 @@ services:
 
   mysql:
     image: mysql:8.4
+    restart: unless-stopped
     ports:
       # Loopback only -- deliberately NOT widened alongside the app port.
       - "127.0.0.1:3306:3306"
