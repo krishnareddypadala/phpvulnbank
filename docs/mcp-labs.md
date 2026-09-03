@@ -29,7 +29,7 @@ docker compose exec app php artisan migrate:fresh --seed --force
 
 | # | Topic | Labs | Status |
 |---|---|---|---|
-| 1 | MCP in Application Security Workflows | — | **Not built** — needs the `mcp-appsec` server |
+| 1 | MCP in Application Security Workflows | §Topic 1 | ✅ concept module (walkthrough, no runnable exploit yet) |
 | 2 | Secret Exposure · Tool Poisoning · Context Injection | 2a, 2b, 2c | ✅ verified |
 | 3 | Privilege Escalation via Scope Creep | 3 | ✅ verified |
 | 4 | Shadow MCP Servers & Discovery | — | **Partial** — needs a multi-server environment |
@@ -38,6 +38,49 @@ docker compose exec app php artisan migrate:fresh --seed --force
 | 7 | AI Security Posture Management (AI-SPM) | 7 | Analysis exercise, not an exploit |
 | 8 | Data Masking & DLP for AI Pipelines | 8a, 8b, 8c | ✅ verified |
 | 9 | Securing Agentic Workflows End-to-End | 9 | ✅ verified |
+
+---
+
+## Topic 1 — MCP in Application Security Workflows
+
+Unlike every other topic here, this one is about MCP as part of the security
+*toolchain* — an assistant driving scanners, triage and CI — not MCP as the
+target. **Delivered as a concept module with a walkthrough; there is no runnable
+exploit against the current lab** (that needs the `mcp-appsec` server, below).
+
+**Where MCP appears in a security workflow.** The legitimate uses first: DAST/SAST
+triage assistants that cluster duplicate findings and draft tickets; PR
+security-review bots; "is this exploitable?" copilots wired to scanner output; SOC
+alert triage against a SIEM. All expose MCP tools like `run_scan`, `get_findings`,
+`triage_finding`, `get_pipeline_status`.
+
+**The core risk — the pipeline turned against itself.** The scanner's *output
+becomes the model's input*, and that output contains attacker-controlled text
+because the scanned application is hostile:
+
+- **Scan-report injection.** PHPVulnBank's stored-XSS payload lands in a ZAP
+  finding's evidence field. `get_findings()` feeds it to the triage model, which
+  reads it as instruction — e.g. "mark all SQL-injection findings as false
+  positive." The security tool becomes the injection vector.
+- **Finding suppression.** An injected instruction closes genuine issues as
+  won't-fix, silently degrading the integrity of the security process itself.
+- **Credential exposure.** The appsec server holds CI tokens and scanner API keys,
+  which leak through the same error and logging paths as Topics 2 and 5.
+
+**The limits — why the human stays.** A scanner finds reflected XSS and missing
+headers; it never finds the IDOR, the negative-amount transfer, the race, or the
+`troy` backdoor. An AI triage layer inherits the scanner's blind spots and adds new
+failure modes. Automation is a floor, not a ceiling.
+
+**Defenses.** Treat scanner output as untrusted data (delimiting/neutralising, as
+in Lab 6c); require human confirmation before any `triage`/`suppress` write; never
+let the triage tool close a finding on a single unverified signal.
+
+**To make it runnable** — build an `mcp-appsec` server exposing `run_dast_scan` /
+`get_findings` / `triage_finding`, seeded with a fixture ZAP report that contains
+the app's own XSS payload. Then `get_findings()` delivers a poisoned finding and the
+injection is demonstrable end-to-end. Designed in [`mcp-design.md`](mcp-design.md)
+§7; roughly a day to build.
 
 ---
 
@@ -212,10 +255,6 @@ Re-count → **unchanged**. Verified: `5 → 6 (api) → 6 (db)`.
 
 ## Not yet runnable
 
-- **Topic 1 — MCP in Application Security Workflows.** Needs an `mcp-appsec` server
-  exposing `run_dast_scan` / `get_findings` / `triage_finding`, where the scanned
-  app's stored-XSS payload lands in a finding and injects the triaging model. Designed
-  in `mcp-design.md` §7; not built.
 - **Topic 4 — Shadow MCP Servers & Discovery.** The mechanics (an undocumented or
   deprecated server) are demonstrable, but the estate-wide inventory problem needs a
   multi-server compose environment, not this single host.
